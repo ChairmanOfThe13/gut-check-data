@@ -151,11 +151,13 @@
 
 
   // ----- line shopping -----
+  // Offshore books are not licensed in any US state; never shop them.
+  const OFFSHORE = new Set(['betus', 'mybookieag', 'bovada', 'betonlineag', 'lowvig', 'betanysports', 'everygame', 'gtbets', 'intertops']);
   // side: home team abbreviation or away; books: array of keys to consider (null = all)
   L.bestLine = function (g, side, books) {
     if (!g.bk || !g.bk.length) return null;
     const home = side === g.h;
-    const rows = g.bk.filter(b => !books || !books.length || books.includes(b.k))
+    const rows = g.bk.filter(b => !OFFSHORE.has(b.k) && (!books || !books.length || books.includes(b.k)))
       .map(b => ({ k: b.k, t: b.t, pt: home ? b.hp : b.ap, pr: home ? b.hpr : b.apr }))
       .filter(r => r.pt != null)
       .sort((a, b) => (b.pt - a.pt) || ((b.pr ?? -999) - (a.pr ?? -999)));   // more points first, then better price
@@ -164,7 +166,7 @@
   };
   L.price = p => p == null ? '' : (p > 0 ? '+' + p : String(p).replace('-', '−'));
   L.books = function () {   // every sportsbook seen in the current lines
-    const m = {}; (L.D.games || []).forEach(g => (g.bk || []).forEach(b => m[b.k] = b.t)); return Object.entries(m).sort((a, b) => a[1].localeCompare(b[1]));
+    const m = {}; (L.D.games || []).forEach(g => (g.bk || []).forEach(b => { if (!OFFSHORE.has(b.k)) m[b.k] = b.t; })); return Object.entries(m).sort((a, b) => a[1].localeCompare(b[1]));
   };
   // what line shopping was worth on graded gut picks
   L.shopStats = function (gut) {
