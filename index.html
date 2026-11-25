@@ -12,7 +12,7 @@
    PICTURE: the tables themselves: a weights grid with live results, a typed line sheet, a sortable standings table.
    COLOUR and TYPE: slate green #1d2a24, chalk #eef1ea, yellow chalk #ffd84a; Archivo Narrow figures, Archivo text.
    LAYOUT: top tab strip, sticky live readout, compact tables that scroll sideways only when they must. */
-:root{color-scheme:dark;--bg:#111614;--bg2:#1b231f;--btn:#2a3630;--ink:#f1f3ee;--mute:#a3b0a8;--rule:rgba(241,243,238,.14);--edge:rgba(241,243,238,.38);--yel:#ffd84a;--win:#7ee2a2;--loss:#ff9b8f}
+:root{color-scheme:dark;--bg:#090d0b;--bg2:#1e2924;--btn:#2d3b34;--ink:#f1f3ee;--mute:#a3b0a8;--rule:rgba(241,243,238,.14);--edge:rgba(241,243,238,.38);--yel:#ffd84a;--win:#7ee2a2;--loss:#ff9b8f}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Archivo,system-ui,sans-serif;overflow-x:clip;padding-bottom:env(safe-area-inset-bottom)}
 .num,h1,h2{font-family:"Archivo Narrow","Arial Narrow",sans-serif;font-weight:700;line-height:1.05;margin:0}
@@ -82,15 +82,15 @@ tr.me td{background:rgba(255,216,74,.08)}
 .stick tbody tr:nth-child(even) td{background:rgba(255,255,255,.025)}
 .stick .m{font-size:18px}
 
-:root[data-pal=stadium]{color-scheme:dark;--bg:#15171c;--bg2:#1f232b;--btn:#2c323d;--ink:#f4f6f8;--mute:#a7b0bd;--rule:rgba(244,246,248,.12);--edge:rgba(244,246,248,.42);--yel:#ff8a1f;--on:#15171c;--head:#0c0e12;--headink:#f4f6f8;--win:#6ee7a0;--loss:#ff8f8f}
-:root[data-pal=chalk]{color-scheme:dark;--bg:#111614;--bg2:#1b231f;--btn:#2a3630;--ink:#f1f3ee;--mute:#a3b0a8;--rule:rgba(241,243,238,.14);--edge:rgba(241,243,238,.38);--yel:#ffd84a;--on:#111614;--head:#0b0f0d;--headink:#f1f3ee;--win:#7ee2a2;--loss:#ff9b8f}
-:root[data-pal=turf]{color-scheme:dark;--bg:#0e3a22;--bg2:#134a2c;--btn:#1a5c37;--ink:#ffffff;--mute:#bcd8c6;--rule:rgba(255,255,255,.16);--edge:rgba(255,255,255,.5);--yel:#ffffff;--on:#0e3a22;--head:#0a2c19;--headink:#ffffff;--win:#a6f3c0;--loss:#ffb4a8}
-:root[data-pal=day]{color-scheme:light;--bg:#eceff3;--bg2:#ffffff;--btn:#f5f7fa;--ink:#121820;--mute:#5a6676;--rule:rgba(18,24,32,.12);--edge:rgba(18,24,32,.32);--yel:#0b5cd6;--on:#ffffff;--head:#121820;--headink:#ffffff;--win:#127a45;--loss:#c62828}
+:root[data-pal=stadium]{color-scheme:dark;--bg:#0b0d10;--bg2:#232831;--btn:#313845;--ink:#f4f6f8;--mute:#a7b0bd;--rule:rgba(244,246,248,.12);--edge:rgba(244,246,248,.42);--yel:#ff8a1f;--on:#15171c;--head:#0c0e12;--headink:#f4f6f8;--win:#6ee7a0;--loss:#ff8f8f}
+:root[data-pal=chalk]{color-scheme:dark;--bg:#090d0b;--bg2:#1e2924;--btn:#2d3b34;--ink:#f1f3ee;--mute:#a3b0a8;--rule:rgba(241,243,238,.14);--edge:rgba(241,243,238,.38);--yel:#ffd84a;--on:#111614;--head:#0b0f0d;--headink:#f1f3ee;--win:#7ee2a2;--loss:#ff9b8f}
+:root[data-pal=turf]{color-scheme:dark;--bg:#082615;--bg2:#165434;--btn:#1f6a42;--ink:#ffffff;--mute:#bcd8c6;--rule:rgba(255,255,255,.16);--edge:rgba(255,255,255,.5);--yel:#ffffff;--on:#0e3a22;--head:#0a2c19;--headink:#ffffff;--win:#a6f3c0;--loss:#ffb4a8}
+:root[data-pal=day]{color-scheme:light;--bg:#d9dee5;--bg2:#ffffff;--btn:#f3f5f8;--ink:#121820;--mute:#5a6676;--rule:rgba(18,24,32,.12);--edge:rgba(18,24,32,.32);--yel:#0b5cd6;--on:#ffffff;--head:#121820;--headink:#ffffff;--win:#127a45;--loss:#c62828}
 .pal{margin-left:auto}.pal select{min-height:36px;font-size:14px;padding:0 8px}
 header .hr{display:flex;align-items:center;gap:10px}
 
-:root[data-pal=concrete]{color-scheme:light;--bg:#c5c9ce;--bg2:#eceef0;--btn:#f7f8f9;--ink:#0a0a0a;--mute:#3c4249;--rule:rgba(0,0,0,.16);--edge:rgba(0,0,0,.6);--yel:#d0141c;--on:#ffffff;--head:#0a0a0a;--headink:#ffffff;--win:#0c6a32;--loss:#b0101a}
-:root[data-pal=contrast]{color-scheme:dark;--bg:#000000;--bg2:#0b0b0b;--btn:#000000;--ink:#ffffff;--mute:#e6e6e6;--rule:rgba(255,255,255,.4);--edge:#ffffff;--yel:#ffe600;--on:#000000;--head:#000000;--headink:#ffffff;--win:#5dff8f;--loss:#ff6b6b}
+:root[data-pal=concrete]{color-scheme:light;--bg:#aeb4bb;--bg2:#f4f5f6;--btn:#ffffff;--ink:#0a0a0a;--mute:#3c4249;--rule:rgba(0,0,0,.16);--edge:rgba(0,0,0,.6);--yel:#d0141c;--on:#ffffff;--head:#0a0a0a;--headink:#ffffff;--win:#0c6a32;--loss:#b0101a}
+:root[data-pal=contrast]{color-scheme:dark;--bg:#000000;--bg2:#141414;--btn:#000000;--ink:#ffffff;--mute:#e6e6e6;--rule:rgba(255,255,255,.4);--edge:#ffffff;--yel:#ffe600;--on:#000000;--head:#000000;--headink:#ffffff;--win:#5dff8f;--loss:#ff6b6b}
 :root[data-pal=contrast] button,:root[data-pal=contrast] select,:root[data-pal=contrast] input,:root[data-pal=contrast] .gi{border-width:2px}
 :root[data-pal=concrete] .gi{box-shadow:0 1px 2px rgba(0,0,0,.18)}
 .pals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -112,8 +112,6 @@ header .hr{display:flex;align-items:center;gap:10px}
 .units{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}.units button{min-height:36px;padding:0 12px;font-size:14px}.units button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .locked .m{font-size:17px}.locked small{display:block;color:var(--mute);font-size:13px}
 
-:root{--fadec:#5aa9ff}
-:root[data-pal=day],:root[data-pal=concrete]{--fadec:#1f5fd1}
 .rc{background:var(--bg2);border:1px solid var(--rule);border-left:5px solid var(--rule);border-radius:12px;padding:12px;margin-bottom:10px}
 .rc.bet{border-left-color:var(--yel);background:color-mix(in srgb,var(--yel) 9%,var(--bg2))}
 .rc.fade{border-left-color:var(--fadec);background:color-mix(in srgb,var(--fadec) 10%,var(--bg2))}
@@ -133,6 +131,27 @@ header .hr{display:flex;align-items:center;gap:10px}
 .gh2{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;padding:10px 12px;border-radius:10px;font:700 18px "Archivo Narrow",sans-serif;background:var(--head);color:var(--headink);border-left:5px solid var(--mute)}
 .gh2 small{font:600 13px Archivo,sans-serif;opacity:.8}
 .grp.bet .gh2{border-left-color:var(--yel)}.grp.fade .gh2{border-left-color:var(--fadec)}
+
+/* decision colors: bet = green, fade = purple, pass = red */
+:root{--betc:#2fbf71;--fadec:#a78bfa;--passc:#f0565b}
+:root[data-pal=day],:root[data-pal=concrete]{--betc:#14833f;--fadec:#6d3fd6;--passc:#c62828}
+:root[data-pal=turf]{--betc:#7cf0a8}
+.gi,.rc{box-shadow:0 2px 10px rgba(0,0,0,.35)}
+:root[data-pal=day] .gi,:root[data-pal=day] .rc,:root[data-pal=concrete] .gi,:root[data-pal=concrete] .rc{box-shadow:0 2px 8px rgba(0,0,0,.14)}
+.rc.bet{border-left-color:var(--betc);background:color-mix(in srgb,var(--betc) 12%,var(--bg2))}
+.rc.fade{border-left-color:var(--fadec);background:color-mix(in srgb,var(--fadec) 13%,var(--bg2))}
+.rc.pass{border-left-color:var(--passc);background:color-mix(in srgb,var(--passc) 9%,var(--bg2));opacity:1}
+.dec button[data-dec=bet][aria-pressed=true],.dec button[data-dec=home][aria-pressed=true],.dec button[data-dec=away][aria-pressed=true]{background:var(--betc);border-color:var(--betc);color:#fff}
+.dec button[data-dec=fade][aria-pressed=true]{background:var(--fadec);border-color:var(--fadec);color:#fff}
+.dec button[data-dec=pass][aria-pressed=true]{background:var(--passc);border-color:var(--passc);color:#fff}
+.dec button[aria-pressed=true] small{color:#fff!important;opacity:.9}
+.grp.bet .gh2{border-left-color:var(--betc)}.grp.fade .gh2{border-left-color:var(--fadec)}.grp.pass .gh2{border-left-color:var(--passc)}
+.rc.bet .gh2,.grp.bet .gh2 span:first-child{color:var(--headink)}
+.best2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 8px}
+.best2 div{font-size:13px;color:var(--mute);border:1px dashed var(--edge);border-radius:8px;padding:5px 8px;line-height:1.25}
+.best2 div b{display:block;font:700 16px "Archivo Narrow",sans-serif;color:var(--ink)}
+.rc details{margin:2px 0 8px}.rc summary{display:inline-flex;align-items:center;min-height:36px;color:var(--yel);font-weight:600;list-style:none;cursor:pointer}.rc summary::-webkit-details-marker{display:none}
+.rc details[open] summary .pl{display:none}.rc details:not([open]) summary .mi{display:none}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -213,8 +232,9 @@ function gut(){
    return `<article class="rc ${kind}" data-g="${E(g.id)}">
     <div class="rh"><span class="num">${E(g.a)} @ ${E(g.h)}</span><span class="gapb"><small>gap</small> ${Math.abs(x.diff).toFixed(1)}</span></div>
     <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
+    ${locked?'':bestBlock(g,l)}
     <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}${locked&&g.m!=null?` · final ${E(g.a)} ${g.as_}, ${E(g.h)} ${g.hs}`:''}</span></p>
-    ${foot}</article>`};
+    ${foot}${injBlock(g)}</article>`};
   let body;
   if(locked){
    const grp=(k,t)=>{const list=rv.filter(x=>{const d=gut.picks[x.g.id].dec||'pass';return k==='bet'?(d==='bet'||d==='home'||d==='away'):d===k});
@@ -229,7 +249,6 @@ function gut(){
   `<div class="act" style="grid-template-columns:minmax(0,1fr)"><button class="y" data-act="lock">Lock my bets · ${nBet} bet${nBet===1?'':'s'}, ${nDec-nBet} pass${nDec-nBet===1?'':'es'}${rv.length-nDec?` · ${rv.length-nDec} undecided`:''}</button></div>`}`;
  }
  const done=games.filter(g=>gut.picks[g.id]).length;
- const injSide=(g,sd)=>{const it=(sd==='h'?g.ihl:g.ial)||[];return `<div><b>${E(sd==='h'?g.h:g.a)} · −${(sd==='h'?g.ih:g.ia).toFixed(1)} pts</b><ul>${it.map(p=>`<li>${E(p.n)} ${E(p.pos)} · <em>${E(p.st)}</em>${p.inj?' · '+E(p.inj):''}</li>`).join('')||'<li>No key absences</li>'}</ul></div>`};
  return chips+`<p class="note">${live?'Set your own spread for every game. Real lines stay hidden until you reveal.':'Practice week: lines and scores stay hidden until you reveal.'}</p>
  <div class="prog" aria-hidden="true"><i style="width:${games.length?done/games.length*100:0}%"></i></div>
  <ul class="gl">${games.map(g=>{const v=gut.picks[g.id]?.m;const fav=v==null?null:v>0?'h':v<0?'a':'pk';
@@ -237,9 +256,22 @@ function gut(){
   <small>${E(g.a)} ${rec(g.a)} · ${E(g.h)} ${rec(g.h)}</small>
   <div class="ctl" role="group" aria-label="${E('Your line for '+g.a+' at '+g.h)}"><button class="f" data-f="a" aria-pressed="${fav==='a'}">${E(g.a)}</button><button class="f" data-f="pk" aria-pressed="${fav==='pk'}">Even</button><button class="f" data-f="h" aria-pressed="${fav==='h'}">${E(g.h)}</button>
   <button class="st" data-s="-1" aria-label="Half point less">−</button><output>${fav==null?'—':fav==='pk'?'PK':'−'+Math.abs(v)}</output><button class="st" data-s="1" aria-label="Half point more">+</button></div>
-  ${g.ihl?`<details><summary><span class="pl">+ Injuries</span><span class="mi">− Injuries</span>&nbsp;<small>(${E(g.a)} −${g.ia.toFixed(1)}, ${E(g.h)} −${g.ih.toFixed(1)} pts)</small></summary><div class="ir">${injSide(g,'a')}${injSide(g,'h')}</div></details>`:''}</li>`}).join('')}</ul>
+  ${injBlock(g)}</li>`}).join('')}</ul>
  <div class="act" style="grid-template-columns:minmax(0,1fr)"><button class="y" data-act="reveal" ${done?'':'disabled'}>Reveal Vegas lines · ${done}/${games.length}</button></div>`;
 }
+function injBlock(g){
+ if(!g.ihl&&!g.ial) return '';
+ const side=sd=>{const it=(sd==='h'?g.ihl:g.ial)||[];return `<div><b>${E(sd==='h'?g.h:g.a)} · −${(sd==='h'?g.ih:g.ia).toFixed(1)} pts</b><ul>${it.map(p=>`<li>${E(p.n)} ${E(p.pos)} · <em>${E(p.st)}</em>${p.inj?' · '+E(p.inj):''}</li>`).join('')||'<li>No key absences</li>'}</ul></div>`};
+ return `<details data-inj="${E(g.id)}"><summary><span class="pl">+ Injuries</span><span class="mi">− Injuries</span>&nbsp;<small class="note">(${E(g.a)} −${g.ia.toFixed(1)}, ${E(g.h)} −${g.ih.toFixed(1)} pts)</small></summary><div class="ir">${side('a')}${side('h')}</div></details>`;
+}
+function bestBlock(g,l){
+ if(!g.bk) return '';
+ const gl={...g,l},bk=L.store.state.books;
+ const one=sd=>{const b=L.bestLine(g,sd,bk);if(!b)return `<div>${E(L.betText(gl,sd))}<b>—</b></div>`;const cons=sd===g.h?-l:l,gain=b.pt-cons;
+  return `<div>Best for ${E(sd)}<b>${E(sd)} ${E(L.sg(b.pt))} <span style="font:500 13px Archivo,sans-serif">(${E(L.price(b.pr))})</span></b>${E(b.t)}${gain>0?` · <span style="color:var(--win);font-weight:700">+${gain} pt</span>`:''}</div>`};
+ return `<div class="best2">${one(g.a)}${one(g.h)}</div>`;
+}
+
 function shopCell(x){
  const v=L.store.gut().picks[x.g.id], b=v&&v.best;
  if(!b||x.diff===0) return '';
@@ -249,7 +281,7 @@ function shopCell(x){
 
 function bindGut(){
  document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{gutWk=+b.dataset.wk;render()});
- document.querySelectorAll('.rc[data-g]').forEach(tr=>{const id=tr.dataset.g;const keep=f=>{const y=scrollY;f();render();scrollTo(0,y)};
+ document.querySelectorAll('.rc[data-g]').forEach(tr=>{const id=tr.dataset.g;const keep=f=>{const y=scrollY,open=[...document.querySelectorAll('details[data-inj][open]')].map(d=>d.dataset.inj);f();render();open.forEach(o=>{const d=document.querySelector(`details[data-inj="${o}"]`);if(d)d.open=true});scrollTo(0,y)};
   tr.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>keep(()=>L.store.setDecision(id,b.dataset.dec)));
   tr.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>keep(()=>L.store.setDecision(id,L.store.gut().picks[id].dec,+b.dataset.u)));});
  const lk=document.querySelector('[data-act=lock]');if(lk)lk.onclick=()=>{const und=L.reveal(L.store.gut(),gutWk).filter(x=>!L.store.gut().picks[x.g.id].dec).length;
