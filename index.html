@@ -186,12 +186,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='dde5ee26b8';
+<script>window.GC_BUILD='73f9778e6d';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=dde5ee26b8"></script>
+<script src="core.js?v=73f9778e6d"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -249,6 +249,50 @@ function clvLine(g,v){
  const x=L.clvOne(g,v); if(x==null) return '';
  const gl={...g,l:g.cl},side=L.betSide(g,v);
  return `<p class="clv">Closing line ${E(L.betText(gl,side))} · ${x>0?`<span class="up">you beat the close by ${x}</span>`:x<0?`<span class="dn">line moved against you by ${-x}</span>`:'no movement'}</p>`;
+}
+
+// ---------- sounds & haptics (synthesized with Web Audio: no files, nothing to license) ----------
+const SFX=(()=>{let ctx=null,on=true,vib=true;try{on=localStorage.getItem('gc.sfx')!=='0';vib=localStorage.getItem('gc.vib')!=='0'}catch(e){}
+ const ac=()=>{if(!ctx){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;ctx=new A()}if(ctx.state==='suspended')ctx.resume();return ctx};
+ const tone=(f,dur,{type='sine',vol=.08,to=null,at=0}={})=>{const c=ac();if(!c)return;const t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g).connect(c.destination);o.start(t);o.stop(t+dur+.02)};
+ const noise=(dur,{vol=.06,at=0,hp=1500}={})=>{const c=ac();if(!c)return;const t=c.currentTime+at,n=Math.floor(c.sampleRate*dur),b=c.createBuffer(1,n,c.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=b;f.type='highpass';f.frequency.value=hp;g.gain.value=vol;s.connect(f).connect(g).connect(c.destination);s.start(t)};
+ const buzz=p=>{if(vib&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}};
+ const P={
+  tap(){noise(.018,{vol:.05,hp:2500});buzz(8)},
+  up(){tone(620,.05,{type:'triangle',vol:.07});tone(930,.06,{type:'triangle',vol:.07,at:.045});buzz(10)},
+  down(){tone(930,.05,{type:'triangle',vol:.07});tone(620,.06,{type:'triangle',vol:.07,at:.045});buzz(10)},
+  pick(){tone(520,.12,{type:'triangle',vol:.09,to:780});buzz(12)},
+  choose(){tone(700,.07,{type:'sine',vol:.07});buzz(10)},
+  reveal(){for(let i=0;i<7;i++)noise(.03,{vol:.05+i*.01,at:i*.045,hp:900});[523,659,784].forEach(f=>tone(f,.35,{type:'triangle',vol:.06,at:.33}));buzz([10,30,10,30,40])},
+  lock(){tone(150,.12,{type:'sine',vol:.16,to:90});noise(.04,{vol:.05,hp:600});buzz(25)},
+  win(){[659,784,988].forEach((f,i)=>tone(f,.22,{type:'triangle',vol:.08,at:i*.08}));buzz([20,40,20])},
+  loss(){tone(330,.25,{type:'sine',vol:.07,to:220});buzz(30)},
+  nailed(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,{type:'triangle',vol:.08,at:i*.07}));buzz([20,30,20,30,60])}
+ };
+ const play=k=>{if(on&&P[k])try{P[k]()}catch(e){}};
+ return {play,get on(){return on},get vib(){return vib},set(o,v){if(o!=null){on=o;try{localStorage.setItem('gc.sfx',o?'1':'0')}catch(e){}}if(v!=null){vib=v;try{localStorage.setItem('gc.vib',v?'1':'0')}catch(e){}}}};
+})();
+document.addEventListener('click',e=>{const b=e.target.closest('button,summary,input[type=checkbox]');if(!b)return;const d=b.dataset||{};
+ if(d.s)return SFX.play(+d.s>0?'up':'down');
+ if(d.d&&d.st)return SFX.play(+d.d>0?'up':'down');
+ if(d.f)return SFX.play('pick');
+ if(d.rev!=null||d.act==='revall')return SFX.play('reveal');
+ if(d.lockg!=null||d.act==='lockall'||d.act==='lock')return; // lock sounds play after the result is known
+ if(d.dec||d.u)return SFX.play('choose');
+ SFX.play('tap');},true);
+// after locking: thunk, then win / loss / nailed when the game is already final (practice weeks)
+function lockSound(ids){
+ SFX.play('lock');const gut=L.store.gut();let best=null;
+ ids.forEach(id=>{const g=L.D.byId[id],v=gut.picks[id];if(!g||!v||g.m==null)return;
+  if(L.closerOne(g,v).nailed){best='nailed';return}
+  const side=L.betSide(g,v),r=side?L.cover(g,side,v.rl??g.l):null;
+  if(r==='W'&&best!=='nailed')best='win';else if(r==='L'&&!best)best='loss';});
+ if(best)setTimeout(()=>SFX.play(best),260);
 }
 
 function gut(){
@@ -354,11 +398,11 @@ function bindGut(){
  document.querySelectorAll('.rc[data-g]').forEach(tr=>{const id=tr.dataset.g;
   tr.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>keep(()=>L.store.setDecision(id,b.dataset.dec)));
   tr.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>keep(()=>L.store.setDecision(id,L.store.gut().picks[id].dec,+b.dataset.u)));});
- document.querySelectorAll('[data-lockg]').forEach(b=>b.onclick=()=>{L.store.lockGame(b.dataset.lockg);toast('Locked');keep(()=>{})});
+ document.querySelectorAll('[data-lockg]').forEach(b=>b.onclick=()=>{const id=b.dataset.lockg;L.store.lockGame(id);lockSound([id]);toast('Locked');keep(()=>{})});
  const gs=()=>L.weekGames(gutWk).filter(g=>g.l!=null),gut=()=>L.store.gut(),live=gutWk>=L.D.current_week;
  const ra=document.querySelector('[data-act=revall]');if(ra)ra.onclick=()=>keep(()=>gs().forEach(g=>{const v=gut().picks[g.id];if(v&&!L.isRev(gut(),g,v)&&!(live&&L.started(g)))L.store.revealGame(g.id)}));
- const la=document.querySelector('[data-act=lockall]');if(la)la.onclick=()=>{if(!la.dataset.sure){la.dataset.sure=1;la.textContent='Lock them? Tap again';return}
-  gs().forEach(g=>{const v=gut().picks[g.id];if(v&&v.dec&&L.isRev(gut(),g,v)&&!L.isLk(gut(),g,v))L.store.lockGame(g.id)});toast('Locked');render()};
+ const la=document.querySelector('[data-act=lockall]');if(la)la.onclick=()=>{if(!la.dataset.sure){SFX.play('tap');la.dataset.sure=1;la.textContent='Lock them? Tap again';return}
+  const ids=[];gs().forEach(g=>{const v=gut().picks[g.id];if(v&&v.dec&&L.isRev(gut(),g,v)&&!L.isLk(gut(),g,v)){L.store.lockGame(g.id);ids.push(g.id)}});lockSound(ids);toast('Locked');render()};
  const rw=$('#resetWk');if(rw)rw.onclick=()=>{if(!rw.dataset.sure){rw.dataset.sure=1;rw.textContent='Erase this week’s picks? Tap again';return}L.store.resetWeek(gutWk);toast('Week '+gutWk+' cleared');render();scrollTo(0,0)};
 }
 function picksView(){
@@ -449,6 +493,7 @@ function settingsView(){
  <div class="row"><button class="danger" data-reset="gut">Erase all gut picks (live and practice)</button></div>
  ${LAB?`<div class="row"><button class="danger" data-reset="prof" ${mine?'':'disabled'}>Delete my ${mine} saved playbook${mine===1?'':'s'}</button></div>`:''}
  <p class="note">Each one asks you to tap again to confirm.</p></section>
+ <section class="set"><h2>Sound &amp; feel</h2><label class="bk" style="min-height:44px"><input type="checkbox" id="sfxT" ${SFX.on?'checked':''}> Sounds</label><label class="bk" style="min-height:44px"><input type="checkbox" id="vibT" ${SFX.vib?'checked':''}> Vibration on taps (Android)</label></section>
  <section class="set"><h2>Practice weeks</h2><label class="bk" style="min-height:44px"><input type="checkbox" id="scT" ${SHOWSC?'checked':''}> Show final scores on past games right away</label><p class="note" style="margin:4px 0 0">Off: a game\'s final score appears once you lock it, so it can\'t sway your line. On: scores show on every finished game, for reviewing.</p></section>
  <section class="set"><h2>Advanced</h2><label class="bk" style="min-height:44px"><input type="checkbox" id="labT" ${LAB?'checked':''}> Show the formula lab (Playbook, Picks and Standings tabs)</label><p class="note" style="margin:4px 0 0">For building your own weighted formulas. None of them has beaten the spread in testing, so they're tucked away here.</p>
  ${LAB?`<div class="row" style="margin-top:8px"><label for="defE" class="sp">Lab: default minimum edge</label><input id="defE" type="number" inputmode="decimal" min="0" max="10" step="0.5" value="${minE}" style="width:80px"></div>`:''}</section>
@@ -456,6 +501,7 @@ function settingsView(){
 }
 function bindSettings(){
  document.querySelectorAll('[data-book]').forEach(c=>c.onchange=()=>{L.store.setBooks([...document.querySelectorAll('[data-book]:checked')].map(x=>x.dataset.book));toast('Saved')});
+ const sx=$('#sfxT');if(sx)sx.onchange=()=>{SFX.set(sx.checked,null);if(sx.checked)SFX.play('win')};const vb=$('#vibT');if(vb)vb.onchange=()=>SFX.set(null,vb.checked);
  const sc=$('#scT');if(sc)sc.onchange=()=>{SHOWSC=sc.checked;try{localStorage.setItem('gc.scores',SHOWSC?'1':'0')}catch(e){};toast('Saved')};
  const lt=$('#labT');if(lt)lt.onchange=()=>{LAB=lt.checked;try{localStorage.setItem('gc.lab',LAB?'1':'0')}catch(e){};render()};
  document.querySelectorAll('[data-pal]').forEach(b=>{if(b.tagName==='BUTTON')b.onclick=()=>{setPal(b.dataset.pal);render()}});
