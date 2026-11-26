@@ -23,6 +23,7 @@
         D.lines_updated = LN.updated;
       } catch (e) { console.warn('live lines unavailable', e); }
     }
+    try { const CL = await getJSON((L.DATA_URL || '') + 'closing.json?t=' + Date.now()); Object.entries(CL || {}).forEach(([id, v]) => { const g = D.byId[id]; if (g && v && v.l != null) g.cl = v.l; }); } catch (e) { }
     L.D = D; return D;
   };
 
@@ -237,6 +238,48 @@
       if (!res || res === 'P') return; const b = B.find(b => gap >= b.lo && gap < b.hi) || B[2]; res === 'W' ? b.w++ : b.l++;
     });
     return B;
+  };
+
+
+  // ----- gamification -----
+  // Closer than Vegas: whose line landed nearer the final margin
+  L.closer = function (gut, opt) {
+    opt = opt || {}; const out = { you: 0, vegas: 0, tie: 0, nailed: 0, n: 0 };
+    Object.entries(gut.picks || {}).forEach(([id, v]) => {
+      const g = L.D.byId[id]; if (!g || g.m == null || !L.isRev(gut, g, v)) return;
+      if (opt.mode && v.mode !== opt.mode) return; if (opt.week && g.w !== opt.week) return;
+      const r = L.closerOne(g, v); out.n++; out[r.who]++; if (r.nailed) out.nailed++;
+    });
+    out.pct = (out.you + out.vegas) ? out.you / (out.you + out.vegas) : null; return out;
+  };
+  L.closerOne = function (g, v) {
+    const l = v.rl ?? g.l, a = Math.abs(v.m - g.m), b = Math.abs(l - g.m);
+    return { you: a, vegas: b, who: a < b ? 'you' : b < a ? 'vegas' : 'tie', nailed: v.m === g.m };
+  };
+  // Ranks, calibrated on 2023-25: pure guessing beats Vegas ~37%, shading Vegas a few points ~43%, our stats model ~46%
+  L.RANKS = [['Square', 0], ['Grinder', 0.40], ['Wiseguy', 0.44], ['Sharp', 0.48]];
+  L.MIN_RANKED = 20;
+  L.rank = function (gut, mode) {
+    const c = L.closer(gut, { mode });
+    if (c.n < L.MIN_RANKED) return { name: 'Rookie', n: c.n, need: L.MIN_RANKED - c.n, pct: c.pct, c };
+    let i = 0; L.RANKS.forEach(([, t], j) => { if (c.pct >= t) i = j; });
+    const next = L.RANKS[i + 1];
+    return { name: L.RANKS[i][0], idx: i, n: c.n, pct: c.pct, c, next: next ? next[0] : null, nextAt: next ? next[1] : null,
+             lo: L.RANKS[i][1], prog: next ? (c.pct - L.RANKS[i][1]) / (next[1] - L.RANKS[i][1]) : 1 };
+  };
+  // Closing line value: points gained vs the last pre-kickoff line, for the side you bet
+  L.clvOne = function (g, v) {
+    if (g.cl == null || v.rl == null || v.mode !== 'live') return null;
+    const side = L.betSide(g, v); if (!side) return null;
+    return side === g.h ? (g.cl - v.rl) : (v.rl - g.cl);
+  };
+  L.clv = function (gut) {
+    const out = { n: 0, sum: 0, beat: 0, worse: 0 };
+    Object.entries(gut.picks || {}).forEach(([id, v]) => {
+      const g = L.D.byId[id]; if (!g || !L.isLk(gut, g, v)) return; const x = L.clvOne(g, v); if (x == null) return;
+      out.n++; out.sum += x; if (x > 0) out.beat++; else if (x < 0) out.worse++;
+    });
+    out.avg = out.n ? Math.round(out.sum / out.n * 100) / 100 : null; return out;
   };
 
   // ----- storage: Claude artifact db (per-person, private) with localStorage fallback -----

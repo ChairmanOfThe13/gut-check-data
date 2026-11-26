@@ -168,6 +168,16 @@ header .hr{display:flex;align-items:center;gap:10px}
 .gl>li{list-style:none}
 .score{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 2px;padding:6px 10px;border-radius:10px;background:var(--head);color:var(--headink);font:700 18px "Archivo Narrow",sans-serif}
 .score>span:first-child{font:700 11px Archivo,sans-serif;letter-spacing:.04em;opacity:.75}.score span{display:inline-flex;align-items:center;gap:6px;opacity:.75}.score span.w{opacity:1}
+.cv{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:6px 0 2px;padding:7px 10px;border-radius:10px;font-size:14px;border:1px solid var(--rule)}
+.cv b{font:700 16px "Archivo Narrow",sans-serif}.cv.you{background:color-mix(in srgb,var(--betc) 18%,var(--bg2));border-color:var(--betc)}
+.cv.vegas{background:color-mix(in srgb,var(--mute) 12%,var(--bg2))}.cv.tie{background:var(--bg2)}
+.cv.nail{background:color-mix(in srgb,var(--yel) 22%,var(--bg2));border-color:var(--yel)}
+.clv{font-size:13px;margin:4px 0 0}.clv .up{color:var(--win);font-weight:700}.clv .dn{color:var(--loss);font-weight:700}
+.rank{background:var(--bg2);border:1px solid var(--rule);border-radius:14px;padding:14px;margin-top:12px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.rank .tt{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.rank .tt .num{font-size:34px;color:var(--yel)}
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 6px}.ladder span{text-align:center;font:700 12px Archivo,sans-serif;padding:5px 2px;border-radius:6px;background:var(--btn);color:var(--mute)}
+.ladder span.on{background:var(--yel);color:var(--on)}.ladder span.done{color:var(--ink)}
+.pbar{height:8px;border-radius:4px;background:var(--btn);overflow:hidden}.pbar i{display:block;height:100%;background:var(--yel)}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -223,6 +233,19 @@ function scoreRow(g){
  const aw=g.as_>g.hs,hw=g.hs>g.as_;
  return `<div class="score"><span>FINAL</span><span class="${aw?'w':''}">${badge(g.a,1)} ${E(g.a)} ${g.as_}</span><span class="${hw?'w':''}">${badge(g.h,1)} ${E(g.h)} ${g.hs}</span></div>`;
 }
+function verdict(g,v){
+ if(g.m==null||v==null) return '';
+ const r=L.closerOne(g,v),f=x=>x===0?'exact':x+' off';
+ if(r.nailed) return `<div class="cv nail"><b>Nailed it!</b><span>Your line was the exact final margin · Vegas ${f(r.vegas)}</span></div>`;
+ const t=r.who==='you'?'<b>You beat Vegas ✓</b>':r.who==='vegas'?'<b>Vegas was closer</b>':'<b>Dead even</b>';
+ return `<div class="cv ${r.who}">${t}<span>You ${f(r.you)} · Vegas ${f(r.vegas)}</span></div>`;
+}
+function clvLine(g,v){
+ const x=L.clvOne(g,v); if(x==null) return '';
+ const gl={...g,l:g.cl},side=L.betSide(g,v);
+ return `<p class="clv">Closing line ${E(L.betText(gl,side))} · ${x>0?`<span class="up">you beat the close by ${x}</span>`:x<0?`<span class="dn">line moved against you by ${-x}</span>`:'no movement'}</p>`;
+}
+
 function gut(){
  const D=L.D; if(gutWk==null)gutWk=D.current_week;
  const wks=L.weeks().filter(w=>L.weekGames(w).some(g=>g.l!=null)).reverse();
@@ -258,14 +281,14 @@ function gut(){
    const what=side?`${E(L.betText(gl,side))} · ${u}u`:'Passed';
    const bb=v.bestB?` <span class="note">· best ${E(v.bestB.t)} ${E(L.sg(v.bestB.pt))} (${E(L.price(v.bestB.pr))})</span>`:'';
    const rawRes=read?L.cover(g,read,l):null;
-   foot=`<div class="out"><span class="m">${what}</span>${res?`<span class="res ${res}">${res==='W'?'WIN':res==='L'?'LOSS':'PUSH'}</span>`:''}${bb}</div>
+   foot=`<div class="out"><span class="m">${what}</span>${res?`<span class="res ${res}">${res==='W'?'WIN':res==='L'?'LOSS':'PUSH'}</span>`:''}${bb}</div>${clvLine(g,v)}
     ${kind==='pass'&&rawRes?`<p class="note" style="margin:2px 0 0">Your read (${E(L.betText(gl,read))}) would have ${rawRes==='W'?'won':rawRes==='L'?'lost':'pushed'}.</p>`:''}
     ${kind==='fade'&&rawRes?`<p class="note" style="margin:2px 0 0">Your read (${E(L.betText(gl,read))}) went ${rawRes}.</p>`:''}`;
   }
   return `<article class="rc ${kind}" data-g="${E(g.id)}">
    <div class="rh"><span class="mt">${badge(g.a,1)}<span class="num">${E(g.a)} @ ${E(g.h)}</span>${badge(g.h,1)}</span><span class="gapb"><small>gap</small> ${Math.abs(diff).toFixed(1)}</span></div>
    <p class="note" style="margin:2px 0 0">${E(L.kick(g))}</p>
-   ${showScore(g)?scoreRow(g):''}
+   ${showScore(g)?scoreRow(g)+verdict(g,v):''}
    <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
    ${locked?'':bestBlock(g,l)}
    <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}</span></p>
@@ -282,6 +305,7 @@ function gut(){
  <div class="prog" aria-hidden="true"><i style="width:${games.length?nRev/games.length*100:0}%"></i></div>
  <p class="note" style="margin-top:4px">${nSet} set · ${nRev} revealed · ${done.length} locked of ${games.length}</p>
  ${br.n?readout({...L.grade([]),...br,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"'):''}
+ ${(()=>{const c=L.closer(gut,{week:gutWk});return c.n?`<p class="note">Closer than Vegas this week: <b class="yel">${c.you} of ${c.n}</b>${c.nailed?` · ${c.nailed} nailed`:''}</p>`:''})()}
  ${open.length?`<div class="legend"><span class="pill you"><small>YOU</small>your line</span><span class="pill vegas"><small>VEGAS</small>real line</span></div>`:''}
  <ul class="gl">${open.map(g=>st(g)==='C'?`<li>${card(g)}</li>`:entry(g)).join('')}</ul>
  ${done.length?`<h2>Locked</h2>${grp('bet','Bets')}${grp('fade','Fades')}${grp('pass','Passes')}`:''}
@@ -382,8 +406,17 @@ function recordView(){
  const wset={};Object.entries(gut.picks).forEach(([id,v])=>{const g=D.byId[id];if(g&&g.s===D.season&&v.mode===mode&&L.isRev(gut,g,v))wset[g.w]=1});
  const wk=Object.keys(wset).map(Number).sort((a,b)=>b-a).map(w=>{const r=L.betRecord(gut,{mode,week:w}),rv=L.reveal(gut,w),rr=L.grade(rv.map(y=>({g:y.g,pred:y.pred})));
   return `<tr><td>Wk ${w}</td><td class="n">${r.n?L.rec(r):r.open?'pending':'—'}</td><td class="n ${r.units>=0?'good':'bad'}">${r.n?u(r.units):'—'}</td><td class="n">${rr.n?L.rec(rr):'pending'}</td></tr>`}).join('');
+ const rk=L.rank(gut,mode),cl=rk.c,cv=L.clv(gut),wkC=Object.keys(wset).map(Number).sort((a,b)=>b-a).map(w=>({w,c:L.closer(gut,{mode,week:w})}));
+ const ladder=['Rookie',...L.RANKS.map(r=>r[0])];
+ const rankCard=`<section class="rank"><div class="tt"><div><p class="note" style="margin:0">Your rank${mode==='practice'?' (practice)':''}</p><div class="num">${rk.name}</div></div><div style="text-align:right"><div class="num" style="font-size:26px;color:var(--ink)">${cl.pct==null?'—':L.pct(cl.pct)}</div><p class="note" style="margin:0">closer than Vegas</p></div></div>
+  <div class="ladder" aria-hidden="true">${ladder.map((n,i)=>`<span class="${n===rk.name?'on':ladder.indexOf(rk.name)>i?'done':''}">${n}</span>`).join('')}</div>
+  ${rk.name==='Rookie'?`<p class="note" style="margin:6px 0 0">${rk.need} more graded game${rk.need===1?'':'s'} until you're ranked.</p>`:rk.next?`<div class="pbar"><i style="width:${Math.max(3,Math.min(100,rk.prog*100))}%"></i></div><p class="note" style="margin:6px 0 0">${L.pct(rk.nextAt)} closer-than-Vegas to reach ${rk.next}.</p>`:`<p class="note" style="margin:6px 0 0">Top rank. You're beating a stats model.</p>`}
+  <details style="margin-top:6px"><summary class="note" style="cursor:pointer">How ranks work</summary><p class="note">Each finished game you set a line on is graded: whose line landed closer to the final margin, yours or Vegas's. Random guesses beat Vegas about 37% of the time, and our stats model about 46%. Square under 40% · Grinder 40–44% · Wiseguy 44–48% · Sharp 48%+. Ranked after ${L.MIN_RANKED} games.</p></details></section>`;
  return `<div class="segc" role="group" aria-label="Record type" style="margin-top:10px"><button data-rm="live" aria-pressed="${mode==='live'}">Live</button><button data-rm="practice" aria-pressed="${mode==='practice'}">Practice</button></div>
  ${mode==='practice'?'<p class="note">Practice weeks are past games, so memory can help. Kept separate from your live record.</p>':''}
+ ${rankCard}
+ <h2>Closer than Vegas</h2>${cl.n?`<table class="ls"><tbody><tr><td>You were closer</td><td class="n good">${cl.you}</td></tr><tr><td>Vegas was closer</td><td class="n">${cl.vegas}</td></tr><tr><td>Dead even</td><td class="n">${cl.tie}</td></tr><tr><td>Nailed it (exact margin)</td><td class="n yel">${cl.nailed}</td></tr></tbody></table>
+  ${wkC.length>1?`<p class="note">By week: ${wkC.map(x=>`Wk ${x.w} ${x.c.you}/${x.c.n}`).join(' · ')}</p>`:''}`:'<p class="note">Graded once games you set a line on are final.</p>'}
  <h2>Your bets</h2>${all.n?readout({...L.grade([]),...all,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"')+`<p class="note">${L.rec(all)} on locked bets, ${u(all.units)} at −110 (${all.risked} units risked). 52.4% to break even.</p>`:`<p class="note">No graded bets yet. After you reveal a week, choose Bet it / Fade / Pass and lock — results land here as games finish.</p>`}
  <h2>By decision</h2><table class="ls"><thead><tr><th>Decision</th><th class="n">Record</th><th class="n">Win %</th><th class="n">Units</th></tr></thead><tbody>
   <tr><td>Bet your read</td><td class="n">${L.rec(bet)}</td><td class="n ${cls(bet)}">${pc(bet)}</td><td class="n">${bet.n?u(bet.units):'—'}</td></tr>
@@ -393,6 +426,7 @@ function recordView(){
  <h2>Your reads by gap size</h2><p class="note">Every revealed game, graded on your read. If a row stays under 50%, fading that kind of gap would have won.</p>
  <table class="ls"><thead><tr><th>Gap vs Vegas</th><th class="n">Your read</th><th class="n">Win %</th><th class="n">If faded</th></tr></thead><tbody>${buckets.map(b=>{const n=b.w+b.l;return `<tr><td>${b.t}</td><td class="n">${n?b.w+'–'+b.l:'—'}</td><td class="n ${n?(b.w/n>=.524?'good':'bad'):''}">${n?(100*b.w/n).toFixed(1)+'%':'—'}</td><td class="n">${n?(100*b.l/n).toFixed(1)+'%':'—'}</td></tr>`}).join('')}</tbody></table>
  <h2>Raw gut lines</h2><p class="note">${raw.n?`Every game you set a line on: ${L.rec(raw)} (${L.pct(raw.pct)}). The model on the same games: ${L.rec(mod)} (${L.pct(mod.pct)}).`:'Nothing graded yet.'}</p>
+ ${mode==='live'?`<h2>Closing line value</h2><p class="note">${cv.n?`Your bets averaged <b class="${cv.avg>=0?'good':'bad'}">${cv.avg>0?'+':''}${cv.avg} pts</b> versus the closing line. Beat the close on ${cv.beat} of ${cv.n}${cv.worse?`, worse on ${cv.worse}`:''}. Pros watch this number: consistently beating the close is the best sign of real skill, even through losing weeks.`:'For live bets: did the line move your way after you locked? Shows up once your bets reach kickoff.'}</p>`:''}
  <h2>Line shopping</h2><p class="note">${sh.n?`On ${sh.n} picks the best book beat the consensus ${sh.better} time${sh.better===1?'':'s'}, worth <b class="yel">${sh.pts.toFixed(1)} points</b>${sh.saved?`, improving ${sh.saved} result${sh.saved===1?'':'s'}`:''}.`:'Appears once live sportsbook odds are connected.'}</p>
  ${wk?`<h2>Week by week</h2><table class="ls stick"><colgroup><col style="width:22%"><col style="width:30%"><col style="width:20%"><col style="width:28%"></colgroup><thead><tr><th>Week</th><th class="n">Bets</th><th class="n">Units</th><th class="n">Raw reads</th></tr></thead><tbody>${wk}</tbody></table>`:''}`;
 }
