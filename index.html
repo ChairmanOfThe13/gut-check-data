@@ -225,6 +225,23 @@ header .hr{display:flex;align-items:center;gap:10px}
 .team.tc.dim{opacity:.5}
 .team.tc .ck{position:absolute;top:6px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--yel);color:var(--on);font:800 15px Archivo,sans-serif;font-style:normal;display:grid;place-items:center}
 @media(prefers-reduced-motion:reduce){.team.tc{transition:none}}
+
+.slist{margin-top:10px;border:2px solid var(--edge);border-radius:16px;overflow:clip;background:var(--bg2);box-shadow:0 6px 22px rgba(0,0,0,.4)}
+:root[data-pal=day] .slist,:root[data-pal=concrete] .slist{box-shadow:0 6px 18px rgba(0,0,0,.14)}
+.shead,.srow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.92fr) minmax(0,.95fr) minmax(0,1.05fr) 12px;gap:6px;align-items:center}
+.shead{position:sticky;top:0;z-index:3;padding:9px 10px;background:var(--head);color:var(--headink);font:700 12px Archivo,sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.srow{all:unset;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,.9fr) minmax(0,.95fr) minmax(0,1.1fr) 12px;gap:6px;align-items:center;width:100%;padding:10px 10px 10px 7px;border-left:4px solid transparent;border-top:1px solid var(--rule);cursor:pointer;min-height:58px;grid-template-columns:minmax(0,1.3fr) minmax(0,.92fr) minmax(0,.95fr) minmax(0,1.05fr) 12px}
+.srow:active{background:color-mix(in srgb,var(--ink) 6%,var(--bg2))}.srow:focus-visible{outline:2px solid var(--yel);outline-offset:-2px}
+.srow.bet{border-left-color:var(--betc)}.srow.fade{border-left-color:var(--fadec)}.srow.pass{border-left-color:var(--passc)}
+.sg{display:flex;align-items:center;gap:6px;min-width:0}.mu{display:flex;flex-direction:column;min-width:0}.mu b{font:800 15px "Archivo Narrow",sans-serif;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mu small{font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mu .fs{color:var(--ink);font-weight:600}
+.sc{font:700 15px "Archivo Narrow",sans-serif;line-height:1.15;min-width:0;overflow-wrap:anywhere}.sc.you{color:var(--yel)}
+.sc.bt small{display:block;font:500 11.5px Archivo,sans-serif;color:var(--mute)}.sc .res{margin:2px 0 0;display:inline-block;font-size:11px}
+.todo{display:inline-block;font:700 12px Archivo,sans-serif;padding:3px 7px;border-radius:999px;border:1.5px solid var(--edge)}.todo.cm{border-color:var(--commit);color:var(--commit)}
+.psd{color:var(--passc);font:700 15px "Archivo Narrow",sans-serif}
+.srow .chev{color:var(--mute);font:700 18px Archivo,sans-serif}
+.onavb{grid-template-columns:1fr 1.1fr 1fr}.onavb [data-nav=list] small{display:block;font-size:11px}
+@media(max-width:360px){.shead,.srow{grid-template-columns:minmax(0,1.4fr) minmax(0,.9fr) minmax(0,.9fr) minmax(0,1fr) 10px}.mu b{font-size:15px}}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -233,12 +250,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='e136304002';
+<script>window.GC_BUILD='f02378c5f8';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=e136304002"></script>
+<script src="core.js?v=f02378c5f8"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -342,7 +359,7 @@ function lockSound(ids){
  if(best)setTimeout(()=>SFX.play(best),260);
 }
 
-let VIEW='list',ONE=null;try{VIEW=localStorage.getItem('gc.view')||'list'}catch(e){}
+let VIEW='list',ONE=null;
 const NICK={ARI:'cardinals',ATL:'falcons',BAL:'ravens',BUF:'bills',CAR:'panthers',CHI:'bears',CIN:'bengals',CLE:'browns',DAL:'cowboys',DEN:'broncos',DET:'lions',GB:'packers',HOU:'texans',IND:'colts',JAX:'jaguars',KC:'chiefs',LA:'rams',LAC:'chargers',LV:'raiders',MIA:'dolphins',MIN:'vikings',NE:'patriots',NO:'saints',NYG:'giants',NYJ:'jets',PHI:'eagles',PIT:'steelers',SEA:'seahawks',SF:'49ers',TB:'buccaneers',TEN:'titans',WAS:'commanders'};
 function preview(g,revealed,mpLine){
  const D=L.D,R=D.ranks||{},rec=t=>(D.records[t]||[0,0,0]);
@@ -417,15 +434,14 @@ function gut(){
    ${locked?'':bestBlock(g,l)}
    <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}</span></p>
    ${foot}${injBlock(g)}</article>`};
- const toggle=`<div class="segc" role="group" aria-label="View" style="margin:8px 0"><button data-view="list" aria-pressed="${VIEW==='list'}">List</button><button data-view="one" aria-pressed="${VIEW==='one'}">One game</button></div>`;
  if(VIEW==='one'&&games.length){
   if(!ONE||!games.some(g=>g.id===ONE)) ONE=(games.find(g=>st(g)!=='D')||games[0]).id;
   const i=games.findIndex(g=>g.id===ONE),g=games[i],state=st(g);
   const body=(state==='C'||state==='D')?card(g):`<ul class="gl">${entry(g)}</ul>`;
   const v=gut.picks[g.id];
-  return chips+toggle+`<div class="one">${body.replace('<details data-inj','<details open data-inj')}</div>
+  return chips+`<div class="one">${body.replace('<details data-inj','<details open data-inj')}</div>
    ${preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2))}
-   <div class="onavb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><p class="note">Game ${i+1} of ${games.length}</p><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></div>`;
+   <div class="onavb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><button data-nav="list" aria-label="Back to the game list">☰ List <small class="note">${i+1}/${games.length}</small></button><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></div>`;
  }
  const open=games.filter(g=>st(g)!=='D'), done=games.filter(g=>st(g)==='D');
  const nSet=games.filter(g=>gut.picks[g.id]).length, nRev=games.filter(g=>'CD'.includes(st(g))).length;
@@ -435,15 +451,30 @@ function gut(){
   return `<section class="grp ${k}"><h3 class="gh2"><span>${t} <small>(${list.length})</small></span>${r.n?`<span>${L.rec(r)}${k!=='pass'?` · ${r.units>0?'+':''}${r.units}u`:' if bet'}</span>`:''}</h3>${list.map(card).join('')}</section>`};
  const br=L.betRecord(gut,{week:gutWk});
  const nB=open.filter(g=>st(g)==='B'&&!(live&&L.started(g))).length, nC=open.filter(g=>st(g)==='C'&&gut.picks[g.id].dec).length;
- return chips+toggle+`<p class="note">${live?'Set your line and commit it to see Vegas. Then bet, fade or pass.':'Practice week: set your line and commit it to see Vegas, one game at a time.'}</p>
- ${live?'':`<label class="bk" style="min-height:44px"><input type="checkbox" id="scG" ${SHOWSC?'checked':''}> Show final scores now <span class="note">(off = each score appears when you lock that game)</span></label>`}
+ const shortKick=g=>{const d=new Date(g.d+'T12:00:00'),day=d.toLocaleDateString('en-US',{weekday:'short'});if(!g.t)return day;const[h,m]=g.t.split(':').map(Number);return `${day} ${((h+11)%12)+1}:${String(m).padStart(2,'0')}${h<12?'a':'p'}`};
+ const cell=(lab,val,cls)=>`<span class="sc ${cls||''}">${val}</span>`;
+ const row=g=>{const v=gut.picks[g.id],state=st(g),closed=live&&L.started(g)&&(state==='A'||state==='B');
+  const l=v&&v.rl!=null?v.rl:g.l,gl={...g,l};
+  const you=v?E(L.lineText(g,v.m)):'—', vegas=(state==='C'||state==='D')?E(L.lineText(g,l)):'<span class="note">hidden</span>';
+  let bet,kind='';
+  if(state==='D'){const side=L.betSide(g,v);kind=v.dec==='fade'?'fade':v.dec==='pass'?'pass':'bet';
+   const res=side?L.cover(g,side,l):null;
+   bet=side?`${E(L.betText(gl,side))}<small>${v.u||1}u${v.dec==='fade'?' · fade':''}</small>${res?`<span class="res ${res}">${res==='W'?'WIN':res==='L'?'LOSS':'PUSH'}</span>`:''}`:'<b class="psd">Pass</b>';}
+  else if(closed) bet='<span class="note">Closed</span>';
+  else if(state==='C') bet=v.dec?`<span class="todo">Lock it</span>`:`<span class="todo">Decide</span>`;
+  else if(state==='B') bet=`<span class="todo cm">Commit</span>`;
+  else bet='<span class="note">Set line</span>';
+  const fin=showScore(g)?`<small class="fs">Final ${g.as_}–${g.hs}</small>`:'';
+  return `<button class="srow ${kind}" data-open="${E(g.id)}" aria-label="${E('Open '+g.a+' at '+g.h)}">
+   <span class="sg"><span class="mu"><b>${E(g.a)} @ ${E(g.h)}</b><small>${E(shortKick(g))}</small>${fin}</span></span>
+   ${cell('You',you,'you')}${cell('Vegas',vegas)}${cell('Bet',bet,'bt')}<span class="chev" aria-hidden="true">›</span></button>`};
+ const c=L.closer(gut,{week:gutWk});
+ return chips+`<p class="note">${live?'Tap a game to set your line, commit it to see Vegas, then bet, fade or pass.':'Practice week: tap a game to play it. Results show once you lock.'}</p>
+ ${live?'':`<label class="bk" style="min-height:44px"><input type="checkbox" id="scG" ${SHOWSC?'checked':''}> Show final scores now</label>`}
  <div class="prog" aria-hidden="true"><i style="width:${games.length?nRev/games.length*100:0}%"></i></div>
- <p class="note" style="margin-top:4px">${nSet} set · ${nRev} committed · ${done.length} locked of ${games.length}</p>
+ <p class="note" style="margin-top:4px">${nSet} set · ${nRev} committed · ${done.length} locked of ${games.length}${c.n?` · closer than Vegas <b class="yel">${c.you} of ${c.n}</b>`:''}</p>
  ${br.n?readout({...L.grade([]),...br,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"'):''}
- ${(()=>{const c=L.closer(gut,{week:gutWk});return c.n?`<p class="note">Closer than Vegas this week: <b class="yel">${c.you} of ${c.n}</b>${c.nailed?` · ${c.nailed} nailed`:''}</p>`:''})()}
- ${open.length?`<div class="legend"><span class="pill you"><small>YOU</small>your line</span><span class="pill vegas"><small>VEGAS</small>real line</span></div>`:''}
- <ul class="gl">${open.map(g=>st(g)==='C'?`<li>${card(g)}</li>`:entry(g)).join('')}</ul>
- ${done.length?`<h2>Locked</h2>${grp('bet','Bets')}${grp('fade','Fades')}${grp('pass','Passes')}`:''}
+ <div class="slist"><div class="shead"><span>Game</span><span>You</span><span>Vegas</span><span>Bet</span><span></span></div>${games.map(row).join('')}</div>
  ${nSet?`<button id="resetWk" style="margin-top:12px">Start week ${gutWk} over</button>`:''}
  ${nB||nC?`<div class="act" style="grid-template-columns:${nB&&nC?'1fr 1fr':'minmax(0,1fr)'}">${nB?`<button class="commit" style="margin:0;min-height:48px" data-act="revall">Commit all · ${nB}</button>`:''}${nC?`<button data-act="lockall">Lock all decided · ${nC}</button>`:''}</div>`:''}`;
 }
@@ -470,8 +501,8 @@ function shopCell(x){
 }
 
 function bindGut(){
- document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{gutWk=+b.dataset.wk;ONE=null;render()});
- const setView=v=>{VIEW=v;try{localStorage.setItem('gc.view',v)}catch(e){};render();scrollTo(0,0)};
+ document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{gutWk=+b.dataset.wk;ONE=null;VIEW='list';render()});
+ const setView=v=>{VIEW=v;render();scrollTo(0,0)};
  document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
  document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{ONE=b.dataset.open;setView('one')});
  document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{const gs=L.weekGames(gutWk).filter(g=>g.l!=null),i=gs.findIndex(g=>g.id===ONE);
