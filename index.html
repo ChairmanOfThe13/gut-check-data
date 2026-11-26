@@ -186,7 +186,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script src="core.js"></script>
+<script>window.GC_BUILD='db157543ec';
+(function(){try{if(GC_BUILD.indexOf('__')===0)return;
+ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
+  if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
+  location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
+<script src="core.js?v=db157543ec"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
