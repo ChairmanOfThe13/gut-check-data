@@ -243,6 +243,7 @@ function gut(){
    }
    return `<article class="rc ${kind}" data-g="${E(g.id)}">
     <div class="rh"><span class="mt">${badge(g.a,1)}<span class="num">${E(g.a)} @ ${E(g.h)}</span>${badge(g.h,1)}</span><span class="gapb"><small>gap</small> ${Math.abs(x.diff).toFixed(1)}</span></div>
+    <p class="note" style="margin:2px 0 0">${E(L.kick(g))}</p>
     <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
     ${locked?'':bestBlock(g,l)}
     <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}${locked&&g.m!=null?` · final ${E(g.a)} ${g.as_}, ${E(g.h)} ${g.hs}`:''}</span></p>
@@ -265,7 +266,7 @@ function gut(){
  <div class="prog" aria-hidden="true"><i style="width:${games.length?done/games.length*100:0}%"></i></div>
  <ul class="gl">${games.map(g=>{const v=gut.picks[g.id]?.m;const fav=v==null?null:v>0?'h':v<0?'a':'pk';
   const mine=t=>fav==null?'':fav==='pk'?'PK':(fav==='h')===(t===g.h)?'−'+Math.abs(v):'+'+Math.abs(v);
-  return `<li class="gi" data-g="${E(g.id)}"><div class="top"><small>${E(g.d.slice(5))} · ${E(g.t)}${g.n?' · neutral site':''}</small><small>${E(g.a)} ${rec(g.a)} · ${E(g.h)} ${rec(g.h)}</small></div>
+  return `<li class="gi" data-g="${E(g.id)}"><div class="top"><small>${E(L.kick(g))}${g.n?' · neutral site':''}</small><small>${E(g.a)} ${rec(g.a)} · ${E(g.h)} ${rec(g.h)}</small></div>
   <div class="tm2" role="group" aria-label="${E('Who is favored, '+g.a+' at '+g.h)}">
    <button class="team" data-f="a" aria-pressed="${fav==='a'}">${badge(g.a)}<span class="tn"><b>${E(g.a)}</b><span>${mine(g.a)||'away'}</span></span></button>
    <button class="team" data-f="h" aria-pressed="${fav==='h'}">${badge(g.h)}<span class="tn"><b>${E(g.h)}</b><span>${mine(g.h)||'home'}</span></span></button></div>

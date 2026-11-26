@@ -124,6 +124,13 @@
   // team colors: [primary, secondary, text]
   L.TEAMC = {"ARI":["#97233f","#000000","#ffffff"],"ATL":["#a71930","#000000","#ffffff"],"BAL":["#241773","#000000","#ffffff"],"BUF":["#00338d","#c60c30","#ffffff"],"CAR":["#0085ca","#101820","#ffffff"],"CHI":["#0b162a","#c83803","#ffffff"],"CIN":["#000000","#fb4f14","#ffffff"],"CLE":["#311d00","#ff3c00","#ffffff"],"DAL":["#002244","#b0b7bc","#ffffff"],"DEN":["#002244","#fb4f14","#ffffff"],"DET":["#005a8b","#b0b7bc","#ffffff"],"GB":["#203731","#ffb612","#ffffff"],"HOU":["#03202f","#a71930","#ffffff"],"IND":["#002c5f","#a5acaf","#ffffff"],"JAX":["#000000","#006778","#ffffff"],"KC":["#e31837","#ffb612","#ffffff"],"LA":["#003594","#ffa300","#ffffff"],"LAC":["#0080c6","#ffc20e","#ffffff"],"LV":["#000000","#a5acaf","#ffffff"],"MIA":["#008e97","#fc4c02","#ffffff"],"MIN":["#4f2683","#ffc62f","#ffffff"],"NE":["#002244","#c60c30","#ffffff"],"NO":["#101820","#d3bc8d","#d3bc8d"],"NYG":["#0b2265","#a71930","#ffffff"],"NYJ":["#125740","#ffffff","#ffffff"],"PHI":["#004953","#a5acaf","#ffffff"],"PIT":["#000000","#ffb612","#ffffff"],"SEA":["#002244","#69be28","#ffffff"],"SF":["#aa0000","#b3995d","#ffffff"],"TB":["#d50a0a","#34302b","#ffffff"],"TEN":["#002244","#4b92db","#ffffff"],"WAS":["#5a1414","#ffb612","#ffffff"]};
 
+  // kickoff label from schedule date + ET time ("20:20") -> "Wed, Nov 25 · 8:20 PM ET"
+  L.kick = function (g) {
+    const d = new Date(g.d + 'T12:00:00'), day = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    if (!g.t) return day; const [h, m] = g.t.split(':').map(Number);
+    return `${day} · ${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'} ET`;
+  };
+
   // ----- formatting (home margin convention: + means home wins by that much) -----
   L.sg = x => x > 0 ? '+' + x : x < 0 ? '−' + (-x) : 'PK';
   L.lineText = (g, m) => m == null ? '—' : m > 0 ? `${g.h} −${m}` : m < 0 ? `${g.a} −${-m}` : 'Pick’em';
