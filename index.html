@@ -206,6 +206,25 @@ header .hr{display:flex;align-items:center;gap:10px}
 .opn:focus-visible{outline:2px solid var(--yel)}.opn small{color:var(--mute);font-size:13px}.opn .chev{font:700 18px Archivo,sans-serif;color:var(--mute);margin-left:4px}
 .onavb{position:sticky;bottom:0;z-index:4;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--rule);margin-top:12px}
 .onavb button{min-height:48px;font:700 17px "Archivo Narrow",sans-serif}.onavb .note{text-align:center;margin:0}
+
+/* game card: the focus of the screen */
+.gi,.rc{border:2px solid var(--edge);border-radius:18px;padding:0 14px 14px;margin-bottom:18px;box-shadow:0 6px 22px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.04) inset}
+:root[data-pal=day] .gi,:root[data-pal=day] .rc,:root[data-pal=concrete] .gi,:root[data-pal=concrete] .rc{box-shadow:0 6px 18px rgba(0,0,0,.16)}
+.gi>.top,.gi>.opn{margin:0 -14px 10px;padding:10px 14px;border-radius:16px 16px 0 0;background:color-mix(in srgb,var(--ink) 6%,var(--bg2));border-bottom:1px solid var(--rule);width:calc(100% + 28px)}
+.rc{padding-top:12px}
+/* team buttons in team colors */
+.tm2{gap:10px}
+.tcol{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hl{font:700 11px Archivo,sans-serif;letter-spacing:.06em;color:var(--mute);padding-left:4px}
+.team.tc{position:relative;flex-direction:column;align-items:flex-start;justify-content:center;gap:0;min-height:76px;padding:8px 14px 12px;border-radius:14px;
+ background:var(--tc1);color:var(--tct);border:3px solid transparent;box-shadow:inset 0 -5px 0 var(--tc2),0 2px 6px rgba(0,0,0,.35);transition:transform .12s,opacity .12s}
+.team.tc b{font:800 26px "Archivo Narrow",sans-serif;line-height:1;color:var(--tct)}
+.team.tc span{font:700 18px "Archivo Narrow",sans-serif;color:var(--tct);opacity:.85;margin-top:2px}
+.team.tc.on{border-color:var(--yel);box-shadow:inset 0 -5px 0 var(--tc2),0 0 0 3px color-mix(in srgb,var(--yel) 45%,transparent),0 4px 12px rgba(0,0,0,.4);transform:translateY(-1px)}
+.team.tc.on span{opacity:1;font-size:22px}
+.team.tc.dim{opacity:.5}
+.team.tc .ck{position:absolute;top:6px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--yel);color:var(--on);font:800 15px Archivo,sans-serif;font-style:normal;display:grid;place-items:center}
+@media(prefers-reduced-motion:reduce){.team.tc{transition:none}}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -214,12 +233,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='8dc14d8d49';
+<script>window.GC_BUILD='e136304002';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=8dc14d8d49"></script>
+<script src="core.js?v=e136304002"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -366,8 +385,8 @@ function gut(){
   ${showScore(g)?scoreRow(g):''}
   ${closed?`<p class="note" style="margin:10px 0 4px">${badge(g.a,1)} ${E(g.a)} @ ${E(g.h)} ${badge(g.h,1)} — kicked off. Picks are closed for this game.</p>`:`
   <div class="tm2" role="group" aria-label="${E('Who is favored, '+g.a+' at '+g.h)}">
-   <button class="team" data-f="a" aria-pressed="${fav==='a'}">${badge(g.a)}<span class="tn"><b>${E(g.a)}</b><span>${mine(g.a)||'away'}</span></span></button>
-   <button class="team" data-f="h" aria-pressed="${fav==='h'}">${badge(g.h)}<span class="tn"><b>${E(g.h)}</b><span>${mine(g.h)||'home'}</span></span></button></div>
+   ${['a','h'].map(sd=>{const t=sd==='h'?g.h:g.a,c=L.TEAMC[t]||['#444','#888','#fff'],on=fav===sd,dim=fav&&fav!=='pk'&&!on;
+     return `<div class="tcol"><span class="hl">${sd==='h'?'HOME':'AWAY'}</span><button class="team tc${on?' on':''}${dim?' dim':''}" data-f="${sd}" aria-pressed="${on}" aria-label="${E(t+(sd==='h'?' (home)':' (away)')+' favored')}" style="--tc1:${c[0]};--tc2:${c[1]};--tct:${c[2]}"><b>${E(t)}</b><span>${mine(t)||'tap if favored'}</span>${on?'<i class="ck" aria-hidden="true">✓</i>':''}</button></div>`}).join('')}</div>
   <div class="adj"><button class="st" data-s="-1" aria-label="Half point less">−</button><output>${fav==null?'Pick a team':fav==='pk'?'Pick’em':(fav==='h'?g.h:g.a)+' −'+Math.abs(v)}</output><button class="st" data-s="1" aria-label="Half point more">+</button><button class="ev" data-f="pk" aria-pressed="${fav==='pk'}">Even</button></div>
   ${v!=null?`<button class="commit" data-rev="${E(g.id)}">Commit my line<small>Shows the Vegas line · your line can’t change after</small></button>`:''}`}
   ${injBlock(g)}</li>`};
