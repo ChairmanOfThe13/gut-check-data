@@ -178,6 +178,17 @@ header .hr{display:flex;align-items:center;gap:10px}
 .ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:10px 0 6px}.ladder span{text-align:center;font:700 12px Archivo,sans-serif;padding:5px 2px;border-radius:6px;background:var(--btn);color:var(--mute)}
 .ladder span.on{background:var(--yel);color:var(--on)}.ladder span.done{color:var(--ink)}
 .pbar{height:8px;border-radius:4px;background:var(--btn);overflow:hidden}.pbar i{display:block;height:100%;background:var(--yel)}
+.onav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 10px}.onav .onb{display:flex;gap:6px}.onav button{min-height:40px;padding:0 12px;font-size:15px}
+.one .gi,.one .rc{margin-bottom:0}
+.fullv{min-height:36px;margin-top:8px;font-size:14px;padding:0 12px;background:transparent;border-style:dashed}
+.fullv.inl{min-height:28px;margin:0;padding:0 8px;font-size:13px;vertical-align:baseline}
+.pv{background:var(--bg2);border:1px solid var(--rule);border-radius:14px;padding:14px;margin-top:14px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.pv h2{margin:0 0 8px}.ph{font:700 16px "Archivo Narrow",sans-serif;margin:14px 0 6px;color:var(--ink)}
+.pvh{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;text-align:center}.pvh>div{display:flex;flex-direction:column;align-items:center;gap:4px}.pvh b{font:800 20px "Archivo Narrow",sans-serif}
+.pvt td,.pvt th{padding:6px 4px}.pv2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.l5{list-style:none;margin:0;padding:0;font-size:14px}.l5 li{padding:3px 0;border-bottom:1px solid var(--rule)}
+.pv a{color:var(--yel)}
+@media(max-width:420px){.pv2{grid-template-columns:minmax(0,1fr)}}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -186,12 +197,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='73f9778e6d';
+<script>window.GC_BUILD='c88b40fdc8';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=73f9778e6d"></script>
+<script src="core.js?v=c88b40fdc8"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -295,6 +306,33 @@ function lockSound(ids){
  if(best)setTimeout(()=>SFX.play(best),260);
 }
 
+let VIEW='list',ONE=null;try{VIEW=localStorage.getItem('gc.view')||'list'}catch(e){}
+const NICK={ARI:'cardinals',ATL:'falcons',BAL:'ravens',BUF:'bills',CAR:'panthers',CHI:'bears',CIN:'bengals',CLE:'browns',DAL:'cowboys',DEN:'broncos',DET:'lions',GB:'packers',HOU:'texans',IND:'colts',JAX:'jaguars',KC:'chiefs',LA:'rams',LAC:'chargers',LV:'raiders',MIA:'dolphins',MIN:'vikings',NE:'patriots',NO:'saints',NYG:'giants',NYJ:'jets',PHI:'eagles',PIT:'steelers',SEA:'seahawks',SF:'49ers',TB:'buccaneers',TEN:'titans',WAS:'commanders'};
+function preview(g,revealed,mpLine){
+ const D=L.D,R=D.ranks||{},rec=t=>(D.records[t]||[0,0,0]);
+ const recTxt=t=>{const r=rec(t);return `${r[0]}–${r[1]}${r[2]?'–'+r[2]:''}`};
+ const last5=t=>D.games.filter(x=>x.s===D.season&&x.m!=null&&(x.h===t||x.a===t)&&x.d<g.d).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,5).map(x=>{
+   const home=x.h===t,mine=home?x.hs:x.as_,theirs=home?x.as_:x.hs,res=mine>theirs?'W':mine<theirs?'L':'T',opp=home?x.a:x.h;
+   const ats=x.l==null?'':((home?x.m:-x.m)+(home?-x.l:x.l))>0?'covered':((home?x.m:-x.m)+(home?-x.l:x.l))<0?'didn’t cover':'push';
+   return `<li><span class="res ${res==='W'?'W':res==='L'?'L':'P'}">${res}</span> ${mine}–${theirs} ${home?'vs':'@'} ${E(opp)} <span class="note">· wk ${x.w}${ats?' · '+ats:''}</span></li>`}).join('')||'<li class="note">No games yet</li>';
+ const met=D.games.filter(x=>x.m!=null&&((x.h===g.h&&x.a===g.a)||(x.h===g.a&&x.a===g.h))&&x.d<g.d).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,3)
+   .map(x=>`<li>${x.s} wk ${x.w}: ${E(x.a)} ${x.as_} @ ${E(x.h)} ${x.hs}</li>`).join('')||'<li class="note">No meetings since 2017</li>';
+ const rows=[['pts_for','Points scored'],['pts_against','Points allowed'],['off_epa','Offense efficiency'],['def_neutral','Defense efficiency'],['off_third','3rd-down %'],['to_margin','Turnover margin'],['off_sack','Protecting the QB'],['def_to','Takeaways']];
+ const rk=(t,k)=>R[t]&&R[t][k]?R[t][k]:null;
+ const statRows=rows.map(([k,lab])=>{const a=rk(g.a,k),h=rk(g.h,k);if(a==null||h==null)return '';
+   return `<tr><td class="n ${a<h?'yel':''}">#${a}</td><td style="text-align:center">${lab}</td><td class="n ${h<a?'yel':''}">#${h}</td></tr>`}).join('');
+ const nfl=NICK[g.a]&&NICK[g.h]?`https://www.nfl.com/games/${NICK[g.a]}-at-${NICK[g.h]}-${g.s}-${g.w>18?'post':'reg'}-${g.w}`:null;
+ const espn=`https://www.espn.com/nfl/scoreboard/_/week/${g.w}/year/${g.s}/seasontype/2`;
+ return `<section class="pv"><h2>Game preview</h2>
+  <div class="pvh"><div>${badge(g.a)}<b>${E(g.a)}</b><span class="note">${recTxt(g.a)} · away</span></div><div class="note" style="align-self:center">${E(L.kick(g))}${g.n?'<br>neutral site':''}</div><div>${badge(g.h)}<b>${E(g.h)}</b><span class="note">${recTxt(g.h)} · home</span></div></div>
+  ${statRows?`<h3 class="ph">Season rankings <span class="note">(1 = best in NFL)</span></h3><table class="ls pvt"><thead><tr><th class="n">${E(g.a)}</th><th style="text-align:center">Stat</th><th class="n">${E(g.h)}</th></tr></thead><tbody>${statRows}</tbody></table>`:''}
+  <div class="pv2"><div><h3 class="ph">${E(g.a)} last 5</h3><ul class="l5">${last5(g.a)}</ul></div><div><h3 class="ph">${E(g.h)} last 5</h3><ul class="l5">${last5(g.h)}</ul></div></div>
+  <h3 class="ph">Recent meetings</h3><ul class="l5">${met}</ul>
+  ${revealed?`<p class="note">Model's line: <b>${E(mpLine)}</b> (a second opinion, shown after you reveal)</p>`:`<p class="note">Vegas and model lines stay hidden until you reveal, so they can't anchor your gut.</p>`}
+  <h3 class="ph">Expert previews</h3><p class="note" style="margin:0">${nfl?`<a href="${nfl}" target="_blank" rel="noopener">NFL.com game page</a> · `:''}<a href="${espn}" target="_blank" rel="noopener">ESPN week ${g.w} scoreboard</a></p>
+ </section>`;
+}
+
 function gut(){
  const D=L.D; if(gutWk==null)gutWk=D.current_week;
  const wks=L.weeks().filter(w=>L.weekGames(w).some(g=>g.l!=null)).reverse();
@@ -307,6 +345,7 @@ function gut(){
   const mine=t=>fav==null?'':fav==='pk'?'PK':(fav==='h')===(t===g.h)?'−'+Math.abs(v):'+'+Math.abs(v);
   const closed=live&&L.started(g);
   return `<li class="gi" data-g="${E(g.id)}"><div class="top"><small>${E(L.kick(g))}${g.n?' · neutral site':''}</small><small>${E(g.a)} ${rec(g.a)} · ${E(g.h)} ${rec(g.h)}</small></div>
+  ${VIEW==='list'?`<button class="fullv" data-open="${E(g.id)}">Full view & preview ›</button>`:''}
   ${showScore(g)?scoreRow(g):''}
   ${closed?`<p class="note" style="margin:10px 0 4px">${badge(g.a,1)} ${E(g.a)} @ ${E(g.h)} ${badge(g.h,1)} — kicked off. Picks are closed for this game.</p>`:`
   <div class="tm2" role="group" aria-label="${E('Who is favored, '+g.a+' at '+g.h)}">
@@ -336,12 +375,23 @@ function gut(){
   }
   return `<article class="rc ${kind}" data-g="${E(g.id)}">
    <div class="rh"><span class="mt">${badge(g.a,1)}<span class="num">${E(g.a)} @ ${E(g.h)}</span>${badge(g.h,1)}</span><span class="gapb"><small>gap</small> ${Math.abs(diff).toFixed(1)}</span></div>
-   <p class="note" style="margin:2px 0 0">${E(L.kick(g))}</p>
+   <p class="note" style="margin:2px 0 0">${E(L.kick(g))}${VIEW==='list'?` · <button class="fullv inl" data-open="${E(g.id)}">Full view ›</button>`:''}</p>
    ${showScore(g)?scoreRow(g)+verdict(g,v):''}
    <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
    ${locked?'':bestBlock(g,l)}
    <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}</span></p>
    ${foot}${injBlock(g)}</article>`};
+ const toggle=`<div class="segc" role="group" aria-label="View" style="margin:8px 0"><button data-view="list" aria-pressed="${VIEW==='list'}">List</button><button data-view="one" aria-pressed="${VIEW==='one'}">One game</button></div>`;
+ if(VIEW==='one'&&games.length){
+  if(!ONE||!games.some(g=>g.id===ONE)) ONE=(games.find(g=>st(g)!=='D')||games[0]).id;
+  const i=games.findIndex(g=>g.id===ONE),g=games[i],state=st(g);
+  const body=(state==='C'||state==='D')?card(g):`<ul class="gl">${entry(g)}</ul>`;
+  const v=gut.picks[g.id];
+  return chips+toggle+`<div class="onav"><button data-nav="list">← List</button><span class="note">Game ${i+1} of ${games.length}</span><span class="onb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></span></div>
+   <div class="one">${body.replace('<details data-inj','<details open data-inj')}</div>
+   ${preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2))}
+   <div class="act" style="grid-template-columns:1fr 1fr"><button data-nav="prev" ${i?'':'disabled'}>‹ Prev game</button><button class="y" data-nav="next" ${i<games.length-1?'':'disabled'}>Next game ›</button></div>`;
+ }
  const open=games.filter(g=>st(g)!=='D'), done=games.filter(g=>st(g)==='D');
  const nSet=games.filter(g=>gut.picks[g.id]).length, nRev=games.filter(g=>'CD'.includes(st(g))).length;
  const grp=(k,t)=>{const list=done.filter(g=>{const d=gut.picks[g.id].dec||'pass';return k==='bet'?(d==='bet'||d==='home'||d==='away'):d===k});
@@ -350,7 +400,7 @@ function gut(){
   return `<section class="grp ${k}"><h3 class="gh2"><span>${t} <small>(${list.length})</small></span>${r.n?`<span>${L.rec(r)}${k!=='pass'?` · ${r.units>0?'+':''}${r.units}u`:' if bet'}</span>`:''}</h3>${list.map(card).join('')}</section>`};
  const br=L.betRecord(gut,{week:gutWk});
  const nB=open.filter(g=>st(g)==='B'&&!(live&&L.started(g))).length, nC=open.filter(g=>st(g)==='C'&&gut.picks[g.id].dec).length;
- return chips+`<p class="note">${live?'Set your line, reveal Vegas, then bet, fade or pass — one game at a time.':'Practice week: set your line and reveal one game at a time.'}</p>
+ return chips+toggle+`<p class="note">${live?'Set your line, reveal Vegas, then bet, fade or pass — one game at a time.':'Practice week: set your line and reveal one game at a time.'}</p>
  ${live?'':`<label class="bk" style="min-height:44px"><input type="checkbox" id="scG" ${SHOWSC?'checked':''}> Show final scores now <span class="note">(off = each score appears when you lock that game)</span></label>`}
  <div class="prog" aria-hidden="true"><i style="width:${games.length?nRev/games.length*100:0}%"></i></div>
  <p class="note" style="margin-top:4px">${nSet} set · ${nRev} revealed · ${done.length} locked of ${games.length}</p>
@@ -385,7 +435,13 @@ function shopCell(x){
 }
 
 function bindGut(){
- document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{gutWk=+b.dataset.wk;render()});
+ document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{gutWk=+b.dataset.wk;ONE=null;render()});
+ const setView=v=>{VIEW=v;try{localStorage.setItem('gc.view',v)}catch(e){};render();scrollTo(0,0)};
+ document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+ document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{ONE=b.dataset.open;setView('one')});
+ document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{const gs=L.weekGames(gutWk).filter(g=>g.l!=null),i=gs.findIndex(g=>g.id===ONE);
+  if(b.dataset.nav==='list')return setView('list');
+  const j=b.dataset.nav==='next'?i+1:i-1;if(gs[j]){ONE=gs[j].id;render();scrollTo(0,0)}});
  const sg=$('#scG');if(sg)sg.onchange=()=>{SHOWSC=sg.checked;try{localStorage.setItem('gc.scores',SHOWSC?'1':'0')}catch(e){};render()};
  const keep=f=>{const y=scrollY,open=[...document.querySelectorAll('details[data-inj][open]')].map(d=>d.dataset.inj);f();render();open.forEach(o=>{const d=document.querySelector(`details[data-inj="${o}"]`);if(d)d.open=true});scrollTo(0,y)};
  const mode=gutWk>=L.D.current_week?'live':'practice';
