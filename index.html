@@ -186,12 +186,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='db157543ec';
+<script>window.GC_BUILD='dde5ee26b8';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=db157543ec"></script>
+<script src="core.js?v=dde5ee26b8"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -257,7 +257,7 @@ function gut(){
  const gut=L.store.gut(),games=L.weekGames(gutWk).filter(g=>g.l!=null),live=gutWk>=D.current_week,MP=L.predict(L.D.presets[0]);
  const rec=t=>(D.records[t]||[0,0]).slice(0,2).join('–');
  const st=g=>{const v=gut.picks[g.id];return !v?'A':L.isLk(gut,g,v)?'D':L.isRev(gut,g,v)?'C':'B'};
- const showScore=g=>g.m!=null&&(SHOWSC||st(g)==='D');
+ const showScore=g=>g.m!=null&&(live||SHOWSC||st(g)==='D');
  const chips=`<div class="chips" role="group" aria-label="Week" style="margin-top:8px">${wks.map(w=>`<button data-wk="${w}" aria-pressed="${w===gutWk}">Wk ${w}${w>=D.current_week?'':' · practice'}</button>`).join('')}</div>`;
  const entry=g=>{const v=gut.picks[g.id]?.m;const fav=v==null?null:v>0?'h':v<0?'a':'pk';
   const mine=t=>fav==null?'':fav==='pk'?'PK':(fav==='h')===(t===g.h)?'−'+Math.abs(v):'+'+Math.abs(v);
@@ -306,7 +306,8 @@ function gut(){
   return `<section class="grp ${k}"><h3 class="gh2"><span>${t} <small>(${list.length})</small></span>${r.n?`<span>${L.rec(r)}${k!=='pass'?` · ${r.units>0?'+':''}${r.units}u`:' if bet'}</span>`:''}</h3>${list.map(card).join('')}</section>`};
  const br=L.betRecord(gut,{week:gutWk});
  const nB=open.filter(g=>st(g)==='B'&&!(live&&L.started(g))).length, nC=open.filter(g=>st(g)==='C'&&gut.picks[g.id].dec).length;
- return chips+`<p class="note">${live?'Set your line, reveal Vegas, then bet, fade or pass — one game at a time.':'Practice week: set your line and reveal one game at a time. Results show once you lock.'}</p>
+ return chips+`<p class="note">${live?'Set your line, reveal Vegas, then bet, fade or pass — one game at a time.':'Practice week: set your line and reveal one game at a time.'}</p>
+ ${live?'':`<label class="bk" style="min-height:44px"><input type="checkbox" id="scG" ${SHOWSC?'checked':''}> Show final scores now <span class="note">(off = each score appears when you lock that game)</span></label>`}
  <div class="prog" aria-hidden="true"><i style="width:${games.length?nRev/games.length*100:0}%"></i></div>
  <p class="note" style="margin-top:4px">${nSet} set · ${nRev} revealed · ${done.length} locked of ${games.length}</p>
  ${br.n?readout({...L.grade([]),...br,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"'):''}
@@ -341,6 +342,7 @@ function shopCell(x){
 
 function bindGut(){
  document.querySelectorAll('[data-wk]').forEach(b=>b.onclick=()=>{gutWk=+b.dataset.wk;render()});
+ const sg=$('#scG');if(sg)sg.onchange=()=>{SHOWSC=sg.checked;try{localStorage.setItem('gc.scores',SHOWSC?'1':'0')}catch(e){};render()};
  const keep=f=>{const y=scrollY,open=[...document.querySelectorAll('details[data-inj][open]')].map(d=>d.dataset.inj);f();render();open.forEach(o=>{const d=document.querySelector(`details[data-inj="${o}"]`);if(d)d.open=true});scrollTo(0,y)};
  const mode=gutWk>=L.D.current_week?'live':'practice';
  document.querySelectorAll('.gi[data-g]').forEach(el=>{const id=el.dataset.g;
