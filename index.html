@@ -189,6 +189,23 @@ header .hr{display:flex;align-items:center;gap:10px}
 .l5{list-style:none;margin:0;padding:0;font-size:14px}.l5 li{padding:3px 0;border-bottom:1px solid var(--rule)}
 .pv a{color:var(--yel)}
 @media(max-width:420px){.pv2{grid-template-columns:minmax(0,1fr)}}
+
+/* role colors: orange = you, blue = commit (one-way), green/purple/red = bet/fade/pass */
+:root{--commit:#2f9bff;--oncommit:#ffffff}
+:root[data-pal=chalk]{--commit:#4cc3ff;--oncommit:#0b1210}
+:root[data-pal=turf]{--commit:#ffd84a;--oncommit:#082615}
+:root[data-pal=day]{--commit:#e8590c;--oncommit:#ffffff}
+:root[data-pal=concrete]{--commit:#1f5fd1;--oncommit:#ffffff}
+:root[data-pal=contrast]{--commit:#00e5ff;--oncommit:#000000}
+.commit{width:100%;margin-top:10px;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:var(--commit);border-color:var(--commit);color:var(--oncommit);font:800 18px "Archivo Narrow",sans-serif}
+.commit small{font:500 12px Archivo,sans-serif;color:inherit!important;opacity:.85}
+.lockb{width:100%;margin-top:10px;min-height:50px;font:800 17px "Archivo Narrow",sans-serif;color:#fff}
+.lockb.bet{background:var(--betc);border-color:var(--betc)}.lockb.fade{background:var(--fadec);border-color:var(--fadec)}.lockb.pass{background:var(--passc);border-color:var(--passc)}
+.lockb:disabled{background:var(--btn);border-color:var(--rule);color:var(--mute);opacity:1}
+.opn{all:unset;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;cursor:pointer;min-height:32px;border-radius:8px}
+.opn:focus-visible{outline:2px solid var(--yel)}.opn small{color:var(--mute);font-size:13px}.opn .chev{font:700 18px Archivo,sans-serif;color:var(--mute);margin-left:4px}
+.onavb{position:sticky;bottom:0;z-index:4;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--rule);margin-top:12px}
+.onavb button{min-height:48px;font:700 17px "Archivo Narrow",sans-serif}.onavb .note{text-align:center;margin:0}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -197,12 +214,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='c88b40fdc8';
+<script>window.GC_BUILD='8dc14d8d49';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=c88b40fdc8"></script>
+<script src="core.js?v=8dc14d8d49"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -328,7 +345,7 @@ function preview(g,revealed,mpLine){
   ${statRows?`<h3 class="ph">Season rankings <span class="note">(1 = best in NFL)</span></h3><table class="ls pvt"><thead><tr><th class="n">${E(g.a)}</th><th style="text-align:center">Stat</th><th class="n">${E(g.h)}</th></tr></thead><tbody>${statRows}</tbody></table>`:''}
   <div class="pv2"><div><h3 class="ph">${E(g.a)} last 5</h3><ul class="l5">${last5(g.a)}</ul></div><div><h3 class="ph">${E(g.h)} last 5</h3><ul class="l5">${last5(g.h)}</ul></div></div>
   <h3 class="ph">Recent meetings</h3><ul class="l5">${met}</ul>
-  ${revealed?`<p class="note">Model's line: <b>${E(mpLine)}</b> (a second opinion, shown after you reveal)</p>`:`<p class="note">Vegas and model lines stay hidden until you reveal, so they can't anchor your gut.</p>`}
+  ${revealed?`<p class="note">Model's line: <b>${E(mpLine)}</b> (a second opinion, shown after you commit)</p>`:`<p class="note">Vegas and model lines stay hidden until you commit your line, so they can't anchor your gut.</p>`}
   <h3 class="ph">Expert previews</h3><p class="note" style="margin:0">${nfl?`<a href="${nfl}" target="_blank" rel="noopener">NFL.com game page</a> · `:''}<a href="${espn}" target="_blank" rel="noopener">ESPN week ${g.w} scoreboard</a></p>
  </section>`;
 }
@@ -344,15 +361,15 @@ function gut(){
  const entry=g=>{const v=gut.picks[g.id]?.m;const fav=v==null?null:v>0?'h':v<0?'a':'pk';
   const mine=t=>fav==null?'':fav==='pk'?'PK':(fav==='h')===(t===g.h)?'−'+Math.abs(v):'+'+Math.abs(v);
   const closed=live&&L.started(g);
-  return `<li class="gi" data-g="${E(g.id)}"><div class="top"><small>${E(L.kick(g))}${g.n?' · neutral site':''}</small><small>${E(g.a)} ${rec(g.a)} · ${E(g.h)} ${rec(g.h)}</small></div>
-  ${VIEW==='list'?`<button class="fullv" data-open="${E(g.id)}">Full view & preview ›</button>`:''}
+  const hdr=`<small>${E(L.kick(g))}${g.n?' · neutral site':''}</small><small>${E(g.a)} ${rec(g.a)} · ${E(g.h)} ${rec(g.h)}${VIEW==='list'?'<span class="chev" aria-hidden="true">›</span>':''}</small>`;
+  return `<li class="gi" data-g="${E(g.id)}">${VIEW==='list'?`<button class="opn" data-open="${E(g.id)}" aria-label="${E('Open '+g.a+' at '+g.h+' with game preview')}">${hdr}</button>`:`<div class="top">${hdr}</div>`}
   ${showScore(g)?scoreRow(g):''}
   ${closed?`<p class="note" style="margin:10px 0 4px">${badge(g.a,1)} ${E(g.a)} @ ${E(g.h)} ${badge(g.h,1)} — kicked off. Picks are closed for this game.</p>`:`
   <div class="tm2" role="group" aria-label="${E('Who is favored, '+g.a+' at '+g.h)}">
    <button class="team" data-f="a" aria-pressed="${fav==='a'}">${badge(g.a)}<span class="tn"><b>${E(g.a)}</b><span>${mine(g.a)||'away'}</span></span></button>
    <button class="team" data-f="h" aria-pressed="${fav==='h'}">${badge(g.h)}<span class="tn"><b>${E(g.h)}</b><span>${mine(g.h)||'home'}</span></span></button></div>
   <div class="adj"><button class="st" data-s="-1" aria-label="Half point less">−</button><output>${fav==null?'Pick a team':fav==='pk'?'Pick’em':(fav==='h'?g.h:g.a)+' −'+Math.abs(v)}</output><button class="st" data-s="1" aria-label="Half point more">+</button><button class="ev" data-f="pk" aria-pressed="${fav==='pk'}">Even</button></div>
-  ${v!=null?`<button class="y revb" data-rev="${E(g.id)}">Reveal Vegas line</button>`:''}`}
+  ${v!=null?`<button class="commit" data-rev="${E(g.id)}">Commit my line<small>Shows the Vegas line · your line can’t change after</small></button>`:''}`}
   ${injBlock(g)}</li>`};
  const card=g=>{const v=gut.picks[g.id],l=v.rl??g.l,gl={...g,l},locked=st(g)==='D',diff=Math.round((v.m-l)*10)/10,read=diff===0?null:(diff>0?g.h:g.a);
   const yours=L.lineText(g,v.m),real=L.lineText(g,l),side=L.betSide(g,v),res=locked&&side?L.cover(g,side,l):null,u=v.u||1;
@@ -364,7 +381,7 @@ function gut(){
   if(!locked){
    foot=`<div class="dec" role="group" aria-label="${E('Decision for '+g.a+' at '+g.h)}">${opts.map(([d,t,sm])=>`<button data-dec="${d}" aria-pressed="${v.dec===d}">${E(t)}<small>${E(sm)}</small></button>`).join('')}</div>
     ${v.dec&&v.dec!=='pass'?`<div class="units" role="group" aria-label="Bet size"><span class="note">Size</span>${[1,2,3].map(n=>`<button data-u="${n}" aria-pressed="${u===n}">${n}u</button>`).join('')}</div>`:''}
-    <button class="y revb" data-lockg="${E(g.id)}" ${v.dec?'':'disabled'}>${v.dec?'Lock this '+(v.dec==='pass'?'pass':'bet'):'Choose Bet it, Fade or Pass'}</button>`;
+    <button class="lockb ${kind}" data-lockg="${E(g.id)}" ${v.dec?'':'disabled'}>${!v.dec?'Choose Bet it, Fade or Pass':v.dec==='pass'?'Lock pass':v.dec==='fade'?'Lock fade · '+E(L.betText(gl,side||L.other(g,read)))+' · '+u+'u':'Lock bet · '+E(L.betText(gl,L.betSide(g,v)))+' · '+u+'u'}</button>`;
   } else {
    const what=side?`${E(L.betText(gl,side))} · ${u}u`:'Passed';
    const bb=v.bestB?` <span class="note">· best ${E(v.bestB.t)} ${E(L.sg(v.bestB.pt))} (${E(L.price(v.bestB.pr))})</span>`:'';
@@ -375,7 +392,7 @@ function gut(){
   }
   return `<article class="rc ${kind}" data-g="${E(g.id)}">
    <div class="rh"><span class="mt">${badge(g.a,1)}<span class="num">${E(g.a)} @ ${E(g.h)}</span>${badge(g.h,1)}</span><span class="gapb"><small>gap</small> ${Math.abs(diff).toFixed(1)}</span></div>
-   <p class="note" style="margin:2px 0 0">${E(L.kick(g))}${VIEW==='list'?` · <button class="fullv inl" data-open="${E(g.id)}">Full view ›</button>`:''}</p>
+   ${VIEW==='list'?`<button class="opn" data-open="${E(g.id)}" aria-label="Open with game preview"><small>${E(L.kick(g))}</small><small>preview<span class="chev" aria-hidden="true">›</span></small></button>`:`<p class="note" style="margin:2px 0 0">${E(L.kick(g))}</p>`}
    ${showScore(g)?scoreRow(g)+verdict(g,v):''}
    <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
    ${locked?'':bestBlock(g,l)}
@@ -387,10 +404,9 @@ function gut(){
   const i=games.findIndex(g=>g.id===ONE),g=games[i],state=st(g);
   const body=(state==='C'||state==='D')?card(g):`<ul class="gl">${entry(g)}</ul>`;
   const v=gut.picks[g.id];
-  return chips+toggle+`<div class="onav"><button data-nav="list">← List</button><span class="note">Game ${i+1} of ${games.length}</span><span class="onb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></span></div>
-   <div class="one">${body.replace('<details data-inj','<details open data-inj')}</div>
+  return chips+toggle+`<div class="one">${body.replace('<details data-inj','<details open data-inj')}</div>
    ${preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2))}
-   <div class="act" style="grid-template-columns:1fr 1fr"><button data-nav="prev" ${i?'':'disabled'}>‹ Prev game</button><button class="y" data-nav="next" ${i<games.length-1?'':'disabled'}>Next game ›</button></div>`;
+   <div class="onavb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><p class="note">Game ${i+1} of ${games.length}</p><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></div>`;
  }
  const open=games.filter(g=>st(g)!=='D'), done=games.filter(g=>st(g)==='D');
  const nSet=games.filter(g=>gut.picks[g.id]).length, nRev=games.filter(g=>'CD'.includes(st(g))).length;
@@ -400,17 +416,17 @@ function gut(){
   return `<section class="grp ${k}"><h3 class="gh2"><span>${t} <small>(${list.length})</small></span>${r.n?`<span>${L.rec(r)}${k!=='pass'?` · ${r.units>0?'+':''}${r.units}u`:' if bet'}</span>`:''}</h3>${list.map(card).join('')}</section>`};
  const br=L.betRecord(gut,{week:gutWk});
  const nB=open.filter(g=>st(g)==='B'&&!(live&&L.started(g))).length, nC=open.filter(g=>st(g)==='C'&&gut.picks[g.id].dec).length;
- return chips+toggle+`<p class="note">${live?'Set your line, reveal Vegas, then bet, fade or pass — one game at a time.':'Practice week: set your line and reveal one game at a time.'}</p>
+ return chips+toggle+`<p class="note">${live?'Set your line and commit it to see Vegas. Then bet, fade or pass.':'Practice week: set your line and commit it to see Vegas, one game at a time.'}</p>
  ${live?'':`<label class="bk" style="min-height:44px"><input type="checkbox" id="scG" ${SHOWSC?'checked':''}> Show final scores now <span class="note">(off = each score appears when you lock that game)</span></label>`}
  <div class="prog" aria-hidden="true"><i style="width:${games.length?nRev/games.length*100:0}%"></i></div>
- <p class="note" style="margin-top:4px">${nSet} set · ${nRev} revealed · ${done.length} locked of ${games.length}</p>
+ <p class="note" style="margin-top:4px">${nSet} set · ${nRev} committed · ${done.length} locked of ${games.length}</p>
  ${br.n?readout({...L.grade([]),...br,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"'):''}
  ${(()=>{const c=L.closer(gut,{week:gutWk});return c.n?`<p class="note">Closer than Vegas this week: <b class="yel">${c.you} of ${c.n}</b>${c.nailed?` · ${c.nailed} nailed`:''}</p>`:''})()}
  ${open.length?`<div class="legend"><span class="pill you"><small>YOU</small>your line</span><span class="pill vegas"><small>VEGAS</small>real line</span></div>`:''}
  <ul class="gl">${open.map(g=>st(g)==='C'?`<li>${card(g)}</li>`:entry(g)).join('')}</ul>
  ${done.length?`<h2>Locked</h2>${grp('bet','Bets')}${grp('fade','Fades')}${grp('pass','Passes')}`:''}
  ${nSet?`<button id="resetWk" style="margin-top:12px">Start week ${gutWk} over</button>`:''}
- ${nB||nC?`<div class="act" style="grid-template-columns:${nB&&nC?'1fr 1fr':'minmax(0,1fr)'}">${nB?`<button class="y" data-act="revall">Reveal all set · ${nB}</button>`:''}${nC?`<button data-act="lockall">Lock all decided · ${nC}</button>`:''}</div>`:''}`;
+ ${nB||nC?`<div class="act" style="grid-template-columns:${nB&&nC?'1fr 1fr':'minmax(0,1fr)'}">${nB?`<button class="commit" style="margin:0;min-height:48px" data-act="revall">Commit all · ${nB}</button>`:''}${nC?`<button data-act="lockall">Lock all decided · ${nC}</button>`:''}</div>`:''}`;
 }
 function badge(t,sm){const c=L.TEAMC[t]||['#444','#888','#fff'];return `<span class="badge${sm?' sm':''}" style="background:${c[0]};color:${c[2]};--b2:${c[1]}" aria-hidden="true">${E(t)}</span>`}
 
@@ -524,7 +540,7 @@ function recordView(){
  ${rankCard}
  <h2>Closer than Vegas</h2>${cl.n?`<table class="ls"><tbody><tr><td>You were closer</td><td class="n good">${cl.you}</td></tr><tr><td>Vegas was closer</td><td class="n">${cl.vegas}</td></tr><tr><td>Dead even</td><td class="n">${cl.tie}</td></tr><tr><td>Nailed it (exact margin)</td><td class="n yel">${cl.nailed}</td></tr></tbody></table>
   ${wkC.length>1?`<p class="note">By week: ${wkC.map(x=>`Wk ${x.w} ${x.c.you}/${x.c.n}`).join(' · ')}</p>`:''}`:'<p class="note">Graded once games you set a line on are final.</p>'}
- <h2>Your bets</h2>${all.n?readout({...L.grade([]),...all,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"')+`<p class="note">${L.rec(all)} on locked bets, ${u(all.units)} at −110 (${all.risked} units risked). 52.4% to break even.</p>`:`<p class="note">No graded bets yet. After you reveal a week, choose Bet it / Fade / Pass and lock — results land here as games finish.</p>`}
+ <h2>Your bets</h2>${all.n?readout({...L.grade([]),...all,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"')+`<p class="note">${L.rec(all)} on locked bets, ${u(all.units)} at −110 (${all.risked} units risked). 52.4% to break even.</p>`:`<p class="note">No graded bets yet. After you commit a line, choose Bet it / Fade / Pass and lock — results land here as games finish.</p>`}
  <h2>By decision</h2><table class="ls"><thead><tr><th>Decision</th><th class="n">Record</th><th class="n">Win %</th><th class="n">Units</th></tr></thead><tbody>
   <tr><td>Bet your read</td><td class="n">${L.rec(bet)}</td><td class="n ${cls(bet)}">${pc(bet)}</td><td class="n">${bet.n?u(bet.units):'—'}</td></tr>
   <tr><td>Faded your read</td><td class="n">${L.rec(fade)}</td><td class="n ${cls(fade)}">${pc(fade)}</td><td class="n">${fade.n?u(fade.units):'—'}</td></tr>
@@ -542,7 +558,7 @@ function bindRecord(){document.querySelectorAll('[data-rm]').forEach(b=>b.onclic
 function settingsView(){
  const D=L.D,cur=document.documentElement.dataset.pal,wk=D.current_week,mine=L.store.state.profiles.length;
  return `<section class="set"><h2>Colors</h2><div class="pals" role="group" aria-label="Color scheme">${PALS.map(([id,n,a,b,c])=>`<button data-pal="${id}" aria-pressed="${id===cur}"><span class="sw"><i style="background:${a}"></i><i style="background:${b}"></i><i style="background:${c}"></i></span>${E(n)}</button>`).join('')}</div></section>
- <section class="set"><h2>Your sportsbooks</h2>${L.books().length?`<p class="note" style="margin:0 0 8px">Line shopping at the reveal only checks the books you pick. None picked = all of them.</p><div class="bkl">${L.books().map(([k,t])=>`<label class="bk"><input type="checkbox" data-book="${E(k)}" ${(L.store.state.books||[]).includes(k)?'checked':''}> ${E(t)}</label>`).join('')}</div>`:`<p class="note" style="margin:0">The list of sportsbooks appears once live odds are connected (the GitHub setup). Then you can pick the ones you have accounts with.</p>`}</section>
+ <section class="set"><h2>Your sportsbooks</h2>${L.books().length?`<p class="note" style="margin:0 0 8px">Line shopping only checks the books you pick. None picked = all of them.</p><div class="bkl">${L.books().map(([k,t])=>`<label class="bk"><input type="checkbox" data-book="${E(k)}" ${(L.store.state.books||[]).includes(k)?'checked':''}> ${E(t)}</label>`).join('')}</div>`:`<p class="note" style="margin:0">The list of sportsbooks appears once live odds are connected (the GitHub setup). Then you can pick the ones you have accounts with.</p>`}</section>
  <section class="set"><h2>Your data</h2><p class="note" style="margin:0">${L.store.synced()?'Playbooks and picks are saved to your account and follow you across devices.':'Playbooks and picks are saved on this device only.'}<br>Stats and injuries updated ${E(D.updated)}.${D.lines_updated?` Live lines updated ${E(D.lines_updated)}.`:` Lines from the daily data feed.`} ${E(D.inj_note)}</p></section>
  <section class="set"><h2>Reset</h2>
  <div class="row"><button class="danger" data-reset="week">Start week ${wk} gut picks over</button></div>
