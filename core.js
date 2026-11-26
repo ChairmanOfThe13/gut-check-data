@@ -145,7 +145,8 @@
   // gut = {picks:{gid:{m,mode,ts}}, submitted:{'2026-12':{mode,ts}}}
   L.gutGrade = function (gut, mode) {
     const rows = Object.entries(gut.picks || {}).filter(([, v]) => !mode || v.mode === mode)
-      .map(([id, v]) => ({ g: L.D.byId[id] && (v.rl != null ? { ...L.D.byId[id], l: v.rl } : L.D.byId[id]), pred: v.m })).filter(r => r.g && gut.submitted[r.g.s + '-' + r.g.w]);
+      .map(([id, v]) => { const g0 = L.D.byId[id]; if (!g0 || !L.isRev(gut, g0, v)) return null;
+        return { g: v.rl != null ? { ...g0, l: v.rl } : g0, pred: v.m }; }).filter(Boolean);
     return L.grade(rows);
   };
   // same-games comparison for a profile
@@ -154,7 +155,7 @@
     return L.grade(ids.map(id => L.D.byId[id]).filter(Boolean).map(g => ({ g, pred: pr[g.i], skip: !L.allowed(p, g, Math.round((pr[g.i] - g.l) * 10) / 10) })));
   };
   L.reveal = function (gut, week) {
-    return L.weekGames(week).filter(g => gut.picks[g.id] && g.l != null).map(g0 => {
+    return L.weekGames(week).filter(g => gut.picks[g.id] && g.l != null && L.isRev(gut, g, gut.picks[g.id])).map(g0 => {
       const v = gut.picks[g0.id], g = v.rl != null ? { ...g0, l: v.rl } : g0, m = v.m; const p = L.pick(g, m); p.diff = Math.round((m - g.l) * 10) / 10; return p;
     }).sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
   };
@@ -182,7 +183,7 @@
   L.shopStats = function (gut) {
     const out = { n: 0, better: 0, pts: 0, saved: 0 };
     Object.entries(gut.picks || {}).forEach(([id, v]) => {
-      const best = v.bestB || (v.dec ? null : v.best), g = L.D.byId[id]; if (!g || !best || v.rl == null || !gut.submitted[g.s + '-' + g.w]) return;
+      const best = v.bestB || (v.dec ? null : v.best), g = L.D.byId[id]; if (!g || !best || v.rl == null || !L.isRev(gut, g, v)) return;
       const home = best.side === g.h, cons = home ? -v.rl : v.rl, gain = best.pt - cons;
       out.n++; if (gain > 0) { out.better++; out.pts += gain; }
       if (g.m != null && gain > 0) {   // did the extra points turn a loss into a push/win, or a push into a win?
@@ -193,6 +194,15 @@
     return out;
   };
 
+
+  // ----- per-game state (older whole-week reveals/locks still count) -----
+  L.wk = g => g.s + '-' + g.w;
+  L.isRev = (gut, g, v) => !!(v && g && (v.rev || (gut.submitted || {})[L.wk(g)]));
+  L.isLk = (gut, g, v) => !!(v && g && (v.lk || (gut.locked || {})[L.wk(g)]));
+  L.started = g => {   // kickoff has passed (schedule times are Eastern)
+    if (!g.t) return false; const mo = +g.d.slice(5, 7), off = (mo >= 11 || mo <= 3) ? '-05:00' : '-04:00';
+    return Date.now() >= new Date(`${g.d}T${g.t}:00${off}`).getTime();
+  };
 
   // ----- bets made after the reveal: dec = 'bet' (your read) | 'fade' (opposite) | 'pass'; u = units -----
   L.readSide = (g, m, l) => { const e = m - l; return e > 0 ? g.h : e < 0 ? g.a : null; };
@@ -208,7 +218,7 @@
   L.betRecord = function (gut, opt) {
     opt = opt || {}; const r = { w: 0, l: 0, p: 0, units: 0, risked: 0, n: 0, open: 0 };
     Object.entries(gut.picks || {}).forEach(([id, v]) => {
-      const g = L.D.byId[id]; if (!g || !gut.locked || !gut.locked[g.s + '-' + g.w]) return;
+      const g = L.D.byId[id]; if (!g || !L.isLk(gut, g, v)) return;
       if (opt.mode && v.mode !== opt.mode) return; if (opt.week && g.w !== opt.week) return;
       if (opt.dec === 'match' ? !(v.dec === 'home' || v.dec === 'away') : (opt.dec && v.dec !== opt.dec)) return;
       const l = v.rl ?? g.l, side = opt.dec === 'pass' ? L.readSide(g, v.m, l) : L.betSide(g, v);
@@ -222,7 +232,7 @@
   L.gapBuckets = function (gut, mode) {
     const B = [[0, 3, '0–3 pts'], [3, 7, '3–7 pts'], [7, 99, '7+ pts']].map(([lo, hi, t]) => ({ lo, hi, t, w: 0, l: 0 }));
     Object.entries(gut.picks || {}).forEach(([id, v]) => {
-      const g = L.D.byId[id]; if (!g || g.m == null || !gut.submitted[g.s + '-' + g.w] || (mode && v.mode !== mode)) return;
+      const g = L.D.byId[id]; if (!g || g.m == null || !L.isRev(gut, g, v) || (mode && v.mode !== mode)) return;
       const l = v.rl ?? g.l; if (l == null) return; const gap = Math.abs(v.m - l), side = L.readSide(g, v.m, l), res = L.cover(g, side, l);
       if (!res || res === 'P') return; const b = B.find(b => gap >= b.lo && gap < b.hi) || B[2]; res === 'W' ? b.w++ : b.l++;
     });
@@ -304,6 +314,18 @@
         nv.bestB = b ? { side, k: b.k, t: b.t, pt: b.pt, pr: b.pr } : null; p[x.id] = nv;
       });
       g.picks = p; g.locked = { ...(g.locked || {}), [L.D.season + '-' + week]: Date.now() }; this.save();
+    },
+    revealGame(gid) {
+      const g = L.D.byId[gid], gs = this.state.gut, v = gs.picks[gid]; if (!g || !v || g.l == null || v.rev) return;
+      const e = v.m - g.l, side = e > 0 ? g.h : e < 0 ? g.a : null, b = side ? L.bestLine(g, side, this.state.books) : null;
+      gs.picks = { ...gs.picks, [gid]: { ...v, rl: g.l, rev: Date.now(), best: b ? { side, k: b.k, t: b.t, pt: b.pt, pr: b.pr } : null } }; this.save();
+    },
+    lockGame(gid) {
+      const g = L.D.byId[gid], gs = this.state.gut, v = gs.picks[gid]; if (!g || !v || !L.isRev(gs, g, v) || v.lk) return;
+      const nv = { ...v, dec: v.dec || 'pass', lk: Date.now() }; if (nv.rl == null) nv.rl = g.l;
+      const side = L.betSide(g, nv), b = side ? L.bestLine(g, side, this.state.books) : null;
+      nv.bestB = b ? { side, k: b.k, t: b.t, pt: b.pt, pr: b.pr } : null;
+      gs.picks = { ...gs.picks, [gid]: nv }; this.save();
     },
     isLocked(week) { return !!(this.state.gut.locked && this.state.gut.locked[L.D.season + '-' + week]); },
     setBooks(arr) { this.state.books = arr && arr.length ? [...arr] : null; this.save(); },
