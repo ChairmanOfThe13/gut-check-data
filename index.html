@@ -245,17 +245,30 @@ header .hr{display:flex;align-items:center;gap:10px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--yel);color:var(--on);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
 @media(max-width:640px){.wg{grid-template-columns:minmax(0,1fr)}.ro .num{font-size:18px}#pSel,#pName{flex:1 1 100%}.ro{grid-template-columns:repeat(3,minmax(0,1fr))}.ro div:nth-child(n+4){display:none}.hide-s{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
+
+.favq{margin:12px 0 2px;text-align:center;font:800 15px Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.adj2{display:grid;grid-template-columns:56px minmax(0,170px) 56px;justify-content:center;gap:8px;align-items:stretch;margin:12px auto 2px}
+.adj2 .st{min-height:56px;font-size:28px;padding:0;border-radius:14px}.adj2 .st:disabled{opacity:.35}
+.ev2{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:56px;padding:4px 8px;border-radius:14px;background:var(--btn);border:2px solid var(--rule)}
+.ev2 b{font:800 22px "Archivo Narrow",sans-serif;line-height:1;color:var(--ink);white-space:nowrap}.ev2 small{font:600 11px Archivo,sans-serif;color:var(--mute)}
+.ev2[aria-pressed=true]{border-color:var(--yel);box-shadow:0 0 0 3px color-mix(in srgb,var(--yel) 35%,transparent)}.ev2[aria-pressed=true] b{color:var(--yel)}
+.ev2.set{background:var(--tc1);border-color:var(--yel)}.ev2.set b,.ev2.set small{color:var(--tct)}.ev2.set small{opacity:.85}
+.sec{margin-top:12px;background:var(--bg2);border:1px solid var(--rule);border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.25);color:var(--ink);font-size:14px}
+.sec>summary{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;list-style:none;cursor:pointer}.sec>summary::-webkit-details-marker{display:none}
+.sec>summary b{font:700 17px "Archivo Narrow",sans-serif;white-space:nowrap}.sec>summary small{margin-left:auto;text-align:right}
+.sx{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--btn);color:var(--yel);font:800 18px Archivo,sans-serif;flex:none}
+.sec .sb{padding:0 14px 14px}.sec .pv{background:none;border:0;box-shadow:none;padding:0;margin:0}
 </style></head><body>
 <header><div class="hr"><h1>Gut <span>Check</span></h1></div>
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='80b3ddeea7';
+<script>window.GC_BUILD='5899d88ac8';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=80b3ddeea7"></script>
+<script src="core.js?v=5899d88ac8"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -359,7 +372,7 @@ function lockSound(ids){
  if(best)setTimeout(()=>SFX.play(best),260);
 }
 
-let VIEW='list',ONE=null;
+let VIEW='list',ONE=null,SEC={inj:false,pv:false};try{Object.assign(SEC,JSON.parse(localStorage.getItem('gc.sec')||'{}'))}catch(e){}
 const NICK={ARI:'cardinals',ATL:'falcons',BAL:'ravens',BUF:'bills',CAR:'panthers',CHI:'bears',CIN:'bengals',CLE:'browns',DAL:'cowboys',DEN:'broncos',DET:'lions',GB:'packers',HOU:'texans',IND:'colts',JAX:'jaguars',KC:'chiefs',LA:'rams',LAC:'chargers',LV:'raiders',MIA:'dolphins',MIN:'vikings',NE:'patriots',NO:'saints',NYG:'giants',NYJ:'jets',PHI:'eagles',PIT:'steelers',SEA:'seahawks',SF:'49ers',TB:'buccaneers',TEN:'titans',WAS:'commanders'};
 function preview(g,revealed,mpLine){
  const D=L.D,R=D.ranks||{},rec=t=>(D.records[t]||[0,0,0]);
@@ -376,7 +389,7 @@ function preview(g,revealed,mpLine){
    return `<tr><td class="n ${a<h?'yel':''}">#${a}</td><td style="text-align:center">${lab}</td><td class="n ${h<a?'yel':''}">#${h}</td></tr>`}).join('');
  const nfl=NICK[g.a]&&NICK[g.h]?`https://www.nfl.com/games/${NICK[g.a]}-at-${NICK[g.h]}-${g.s}-${g.w>18?'post':'reg'}-${g.w}`:null;
  const espn=`https://www.espn.com/nfl/scoreboard/_/week/${g.w}/year/${g.s}/seasontype/2`;
- return `<section class="pv"><h2>Game preview</h2>
+ return `<section class="pv">
   <div class="pvh"><div>${badge(g.a)}<b>${E(g.a)}</b><span class="note">${recTxt(g.a)} · away</span></div><div class="note" style="align-self:center">${E(L.kick(g))}${g.n?'<br>neutral site':''}</div><div>${badge(g.h)}<b>${E(g.h)}</b><span class="note">${recTxt(g.h)} · home</span></div></div>
   ${statRows?`<h3 class="ph">Season rankings <span class="note">(1 = best in NFL)</span></h3><table class="ls pvt"><thead><tr><th class="n">${E(g.a)}</th><th style="text-align:center">Stat</th><th class="n">${E(g.h)}</th></tr></thead><tbody>${statRows}</tbody></table>`:''}
   <div class="pv2"><div><h3 class="ph">${E(g.a)} last 5</h3><ul class="l5">${last5(g.a)}</ul></div><div><h3 class="ph">${E(g.h)} last 5</h3><ul class="l5">${last5(g.h)}</ul></div></div>
@@ -401,12 +414,13 @@ function gut(){
   return `<li class="gi" data-g="${E(g.id)}">${VIEW==='list'?`<button class="opn" data-open="${E(g.id)}" aria-label="${E('Open '+g.a+' at '+g.h+' with game preview')}">${hdr}</button>`:`<div class="top">${hdr}</div>`}
   ${showScore(g)?scoreRow(g):''}
   ${closed?`<p class="note" style="margin:10px 0 4px">${badge(g.a,1)} ${E(g.a)} @ ${E(g.h)} ${badge(g.h,1)} — kicked off. Picks are closed for this game.</p>`:`
+  <h3 class="favq">${fav==null?'Who’s favored?':fav==='pk'?'Even game':'Your line'}</h3>
   <div class="tm2" role="group" aria-label="${E('Who is favored, '+g.a+' at '+g.h)}">
    ${['a','h'].map(sd=>{const t=sd==='h'?g.h:g.a,c=L.TEAMC[t]||['#444','#888','#fff'],on=fav===sd,dim=fav&&fav!=='pk'&&!on;
-     return `<div class="tcol"><span class="hl">${sd==='h'?'HOME':'AWAY'}</span><button class="team tc${on?' on':''}${dim?' dim':''}" data-f="${sd}" aria-pressed="${on}" aria-label="${E(t+(sd==='h'?' (home)':' (away)')+' favored')}" style="--tc1:${c[0]};--tc2:${c[1]};--tct:${c[2]}"><b>${E(t)}</b><span>${mine(t)||'tap if favored'}</span>${on?'<i class="ck" aria-hidden="true">✓</i>':''}</button></div>`}).join('')}</div>
-  <div class="adj"><button class="st" data-s="-1" aria-label="Half point less">−</button><output>${fav==null?'Pick a team':fav==='pk'?'Pick’em':(fav==='h'?g.h:g.a)+' −'+Math.abs(v)}</output><button class="st" data-s="1" aria-label="Half point more">+</button><button class="ev" data-f="pk" aria-pressed="${fav==='pk'}">Even</button></div>
+     return `<div class="tcol"><span class="hl">${sd==='h'?'HOME':'AWAY'}</span><button class="team tc${on?' on':''}${dim?' dim':''}" data-f="${sd}" aria-pressed="${on}" aria-label="${E(t+(sd==='h'?' (home)':' (away)')+' favored')}" style="--tc1:${c[0]};--tc2:${c[1]};--tct:${c[2]}"><b>${E(t)}</b><span>${mine(t)||'&nbsp;'}</span>${on?'<i class="ck" aria-hidden="true">✓</i>':''}</button></div>`}).join('')}</div>
+  <div class="adj2"><button class="st" data-s="-1" aria-label="Half point less" ${fav==null||fav==='pk'?'disabled':''}>−</button><button class="ev2${fav&&fav!=='pk'?' set':''}" data-f="pk" aria-pressed="${fav==='pk'}" aria-label="${fav&&fav!=='pk'?'Set to even (pick’em)':'Even (pick’em)'}" ${fav&&fav!=='pk'?`style="--tc1:${(L.TEAMC[fav==='h'?g.h:g.a]||['#444'])[0]};--tct:${(L.TEAMC[fav==='h'?g.h:g.a]||['#444','#888','#fff'])[2]}"`:''}><b>${fav&&fav!=='pk'?E(fav==='h'?g.h:g.a)+' −'+Math.abs(v):'EVEN'}</b><small>${fav&&fav!=='pk'?'tap for even':fav==='pk'?'pick’em':'or tap for pick’em'}</small></button><button class="st" data-s="1" aria-label="Half point more" ${fav==null||fav==='pk'?'disabled':''}>+</button></div>
   ${v!=null?`<button class="commit" data-rev="${E(g.id)}">Commit my line<small>Shows the Vegas line · your line can’t change after</small></button>`:''}`}
-  ${injBlock(g)}</li>`};
+  </li>`};
  const card=g=>{const v=gut.picks[g.id],l=v.rl??g.l,gl={...g,l},locked=st(g)==='D',diff=Math.round((v.m-l)*10)/10,read=diff===0?null:(diff>0?g.h:g.a);
   const yours=L.lineText(g,v.m),real=L.lineText(g,l),side=L.betSide(g,v),res=locked&&side?L.cover(g,side,l):null,u=v.u||1;
   const kind=!v.dec?'':v.dec==='fade'?'fade':v.dec==='pass'?'pass':'bet';
@@ -433,14 +447,17 @@ function gut(){
    <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
    ${locked?'':bestBlock(g,l)}
    <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}</span></p>
-   ${foot}${injBlock(g)}</article>`};
+   ${foot}</article>`};
  if(VIEW==='one'&&games.length){
   if(!ONE||!games.some(g=>g.id===ONE)) ONE=(games.find(g=>st(g)!=='D')||games[0]).id;
   const i=games.findIndex(g=>g.id===ONE),g=games[i],state=st(g);
   const body=(state==='C'||state==='D')?card(g):`<ul class="gl">${entry(g)}</ul>`;
   const v=gut.picks[g.id];
-  return chips+`<div class="one">${body.replace('<details data-inj','<details open data-inj')}</div>
-   ${preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2))}
+  const sec=(k,title,sub,html)=>`<details class="sec" data-sec="${k}" ${SEC[k]?'open':''}><summary><span class="sx" aria-hidden="true">${SEC[k]?'−':'+'}</span><b>${title}</b>${sub?`<small class="note">${sub}</small>`:''}</summary><div class="sb">${html}</div></details>`;
+  const inj=injBlock(g);
+  return chips+`<div class="one">${body}</div>
+   ${sec('inj','Injuries',inj?E(`${g.a} −${g.ia.toFixed(1)} · ${g.h} −${g.ih.toFixed(1)} pts`):'none listed',inj||'<p class="note" style="margin:0">No key absences reported.</p>')}
+   ${sec('pv','Game preview','ranks · last 5 · history',preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2)))}
    <div class="onavb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><button data-nav="list" aria-label="Back to the game list">☰ List <small class="note">${i+1}/${games.length}</small></button><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></div>`;
  }
  const open=games.filter(g=>st(g)!=='D'), done=games.filter(g=>st(g)==='D');
@@ -483,7 +500,7 @@ function badge(t,sm){const c=L.TEAMC[t]||['#444','#888','#fff'];return `<span cl
 function injBlock(g){
  if(!g.ihl&&!g.ial) return '';
  const side=sd=>{const it=(sd==='h'?g.ihl:g.ial)||[];return `<div><b>${E(sd==='h'?g.h:g.a)} · −${(sd==='h'?g.ih:g.ia).toFixed(1)} pts</b><ul>${it.map(p=>`<li>${E(p.n)} ${E(p.pos)} · <em>${E(p.st)}</em>${p.inj?' · '+E(p.inj):''}</li>`).join('')||'<li>No key absences</li>'}</ul></div>`};
- return `<details data-inj="${E(g.id)}"><summary><span class="pl">+ Injuries</span><span class="mi">− Injuries</span>&nbsp;<small class="note">(${E(g.a)} −${g.ia.toFixed(1)}, ${E(g.h)} −${g.ih.toFixed(1)} pts)</small></summary><div class="ir">${side('a')}${side('h')}</div></details>`;
+ return `<div class="ir">${side('a')}${side('h')}</div>`;
 }
 function bestBlock(g,l){
  if(!g.bk) return '';
@@ -508,13 +525,14 @@ function bindGut(){
  document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{const gs=L.weekGames(gutWk).filter(g=>g.l!=null),i=gs.findIndex(g=>g.id===ONE);
   if(b.dataset.nav==='list')return setView('list');
   const j=b.dataset.nav==='next'?i+1:i-1;if(gs[j]){ONE=gs[j].id;render();scrollTo(0,0)}});
+ document.querySelectorAll('details.sec').forEach(d=>d.ontoggle=()=>{SEC[d.dataset.sec]=d.open;try{localStorage.setItem('gc.sec',JSON.stringify(SEC))}catch(e){};const x=d.querySelector('.sx');if(x)x.textContent=d.open?'−':'+'});
  const sg=$('#scG');if(sg)sg.onchange=()=>{SHOWSC=sg.checked;try{localStorage.setItem('gc.scores',SHOWSC?'1':'0')}catch(e){};render()};
- const keep=f=>{const y=scrollY,open=[...document.querySelectorAll('details[data-inj][open]')].map(d=>d.dataset.inj);f();render();open.forEach(o=>{const d=document.querySelector(`details[data-inj="${o}"]`);if(d)d.open=true});scrollTo(0,y)};
+ const keep=f=>{const y=scrollY;f();render();scrollTo(0,y)};
  const mode=gutWk>=L.D.current_week?'live':'practice';
  document.querySelectorAll('.gi[data-g]').forEach(el=>{const id=el.dataset.g;
   const set=m=>keep(()=>L.store.setGut(id,m,mode));
   el.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const cur=Math.abs(L.store.gut().picks[id]?.m||3)||3;const f=b.dataset.f;set(f==='pk'?0:f==='h'?cur:-cur)});
-  el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const cur=L.store.gut().picks[id]?.m;if(!cur)return toast('Pick who’s favored first');set(Math.sign(cur)*Math.max(0.5,Math.abs(cur)+0.5*+b.dataset.s))});
+  el.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const cur=L.store.gut().picks[id]?.m;if(!cur)return toast('Pick who’s favored first');{const n=Math.abs(cur)+0.5*+b.dataset.s;set(n<=0?0:Math.sign(cur)*n)}});
  });
  document.querySelectorAll('[data-rev]').forEach(b=>b.onclick=()=>keep(()=>L.store.revealGame(b.dataset.rev)));
  document.querySelectorAll('.rc[data-g]').forEach(tr=>{const id=tr.dataset.g;
