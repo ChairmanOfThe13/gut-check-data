@@ -250,12 +250,12 @@ header .hr{display:flex;align-items:center;gap:10px}
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='f02378c5f8';
+<script>window.GC_BUILD='80b3ddeea7';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=f02378c5f8"></script>
+<script src="core.js?v=80b3ddeea7"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -579,16 +579,16 @@ function recordView(){
  const wset={};Object.entries(gut.picks).forEach(([id,v])=>{const g=D.byId[id];if(g&&g.s===D.season&&v.mode===mode&&L.isRev(gut,g,v))wset[g.w]=1});
  const wk=Object.keys(wset).map(Number).sort((a,b)=>b-a).map(w=>{const r=L.betRecord(gut,{mode,week:w}),rv=L.reveal(gut,w),rr=L.grade(rv.map(y=>({g:y.g,pred:y.pred})));
   return `<tr><td>Wk ${w}</td><td class="n">${r.n?L.rec(r):r.open?'pending':'—'}</td><td class="n ${r.units>=0?'good':'bad'}">${r.n?u(r.units):'—'}</td><td class="n">${rr.n?L.rec(rr):'pending'}</td></tr>`}).join('');
- const rk=L.rank(gut,mode),cl=rk.c,cv=L.clv(gut),wkC=Object.keys(wset).map(Number).sort((a,b)=>b-a).map(w=>({w,c:L.closer(gut,{mode,week:w})}));
+ const rk=L.rank(gut,mode),cl=L.closer(gut,{mode}),cv=L.clv(gut),wkC=Object.keys(wset).map(Number).sort((a,b)=>b-a).map(w=>({w,c:L.closer(gut,{mode,week:w})}));
  const ladder=['Rookie',...L.RANKS.map(r=>r[0])];
- const rankCard=`<section class="rank"><div class="tt"><div><p class="note" style="margin:0">Your rank${mode==='practice'?' (practice)':''}</p><div class="num">${rk.name}</div></div><div style="text-align:right"><div class="num" style="font-size:26px;color:var(--ink)">${cl.pct==null?'—':L.pct(cl.pct)}</div><p class="note" style="margin:0">closer than Vegas</p></div></div>
+ const rankCard=`<section class="rank"><div class="tt"><div><p class="note" style="margin:0">Your rank${mode==='practice'?' (practice)':''}</p><div class="num">${rk.name}</div></div><div style="text-align:right"><div class="num" style="font-size:26px;color:var(--ink)">${rk.pct==null?'—':L.pct(rk.pct)}</div><p class="note" style="margin:0">against the spread${rk.n?` · ${rk.r.w}–${rk.r.l}`:''}</p></div></div>
   <div class="ladder" aria-hidden="true">${ladder.map((n,i)=>`<span class="${n===rk.name?'on':ladder.indexOf(rk.name)>i?'done':''}">${n}</span>`).join('')}</div>
-  ${rk.name==='Rookie'?`<p class="note" style="margin:6px 0 0">${rk.need} more graded game${rk.need===1?'':'s'} until you're ranked.</p>`:rk.next?`<div class="pbar"><i style="width:${Math.max(3,Math.min(100,rk.prog*100))}%"></i></div><p class="note" style="margin:6px 0 0">${L.pct(rk.nextAt)} closer-than-Vegas to reach ${rk.next}.</p>`:`<p class="note" style="margin:6px 0 0">Top rank. You're beating a stats model.</p>`}
-  <details style="margin-top:6px"><summary class="note" style="cursor:pointer">How ranks work</summary><p class="note">Each finished game you set a line on is graded: whose line landed closer to the final margin, yours or Vegas's. Random guesses beat Vegas about 37% of the time, and our stats model about 46%. Square under 40% · Grinder 40–44% · Wiseguy 44–48% · Sharp 48%+. Ranked after ${L.MIN_RANKED} games.</p></details></section>`;
+  ${rk.name==='Rookie'?`<p class="note" style="margin:6px 0 0">${rk.need} more graded bet${rk.need===1?'':'s'} until you're ranked.</p>`:rk.next?`<div class="pbar"><i style="width:${Math.max(3,Math.min(100,rk.prog*100))}%"></i></div><p class="note" style="margin:6px 0 0">${L.pct(rk.nextAt)} against the spread to reach ${rk.next}.</p>`:`<p class="note" style="margin:6px 0 0">Top rank. Very few bettors hold 55% over a season.</p>`}
+  <details style="margin-top:6px"><summary class="note" style="cursor:pointer">How ranks work</summary><p class="note">Ranks come from your record against the spread on the bets you lock: bets, fades and matched-Vegas picks; passes don't count. You need 52.4% to profit at −110 odds. Square under 47.6% · Grinder 47.6–52.4% (around break-even) · Wiseguy 52.4–55% (profitable) · Sharp 55%+. Ranked after ${L.MIN_RANKED} graded bets. Knowing the Vegas line doesn't help you pick the right side, so the rank can't be gamed by peeking.</p></details></section>`;
  return `<div class="segc" role="group" aria-label="Record type" style="margin-top:10px"><button data-rm="live" aria-pressed="${mode==='live'}">Live</button><button data-rm="practice" aria-pressed="${mode==='practice'}">Practice</button></div>
  ${mode==='practice'?'<p class="note">Practice weeks are past games, so memory can help. Kept separate from your live record.</p>':''}
  ${rankCard}
- <h2>Closer than Vegas</h2>${cl.n?`<table class="ls"><tbody><tr><td>You were closer</td><td class="n good">${cl.you}</td></tr><tr><td>Vegas was closer</td><td class="n">${cl.vegas}</td></tr><tr><td>Dead even</td><td class="n">${cl.tie}</td></tr><tr><td>Nailed it (exact margin)</td><td class="n yel">${cl.nailed}</td></tr></tbody></table>
+ <h2>Closer than Vegas <span class="note">· personal</span></h2>${cl.n?`<p class="note" style="margin-top:0">Just for you, not part of your rank: whose line landed nearer the final margin. Closer than Vegas on <b class="yel">${cl.you} of ${cl.you+cl.vegas}</b> (${L.pct(cl.pct)}).</p>`:''}${cl.n?`<table class="ls"><tbody><tr><td>You were closer</td><td class="n good">${cl.you}</td></tr><tr><td>Vegas was closer</td><td class="n">${cl.vegas}</td></tr><tr><td>Dead even</td><td class="n">${cl.tie}</td></tr><tr><td>Nailed it (exact margin)</td><td class="n yel">${cl.nailed}</td></tr></tbody></table>
   ${wkC.length>1?`<p class="note">By week: ${wkC.map(x=>`Wk ${x.w} ${x.c.you}/${x.c.n}`).join(' · ')}</p>`:''}`:'<p class="note">Graded once games you set a line on are final.</p>'}
  <h2>Your bets</h2>${all.n?readout({...L.grade([]),...all,suPct:null,mae:null}).replace('class="ro"','class="ro" style="position:static"')+`<p class="note">${L.rec(all)} on locked bets, ${u(all.units)} at −110 (${all.risked} units risked). 52.4% to break even.</p>`:`<p class="note">No graded bets yet. After you commit a line, choose Bet it / Fade / Pass and lock — results land here as games finish.</p>`}
  <h2>By decision</h2><table class="ls"><thead><tr><th>Decision</th><th class="n">Record</th><th class="n">Win %</th><th class="n">Units</th></tr></thead><tbody>

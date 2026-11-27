@@ -256,16 +256,17 @@
     const l = v.rl ?? g.l, a = Math.abs(v.m - g.m), b = Math.abs(l - g.m);
     return { you: a, vegas: b, who: a < b ? 'you' : b < a ? 'vegas' : 'tie', nailed: v.m === g.m };
   };
-  // Ranks, calibrated on 2023-25: pure guessing beats Vegas ~37%, shading Vegas a few points ~43%, our stats model ~46%
-  L.RANKS = [['Square', 0], ['Grinder', 0.40], ['Wiseguy', 0.44], ['Sharp', 0.48]];
+  // Ranks: record against the spread on your locked bets (bets, fades, matched-Vegas picks; passes don't count).
+  // 52.4% is break-even at -110. Seeing the Vegas line doesn't help pick the right side, so this can't be gamed by peeking.
+  L.RANKS = [['Square', 0], ['Grinder', 0.476], ['Wiseguy', 0.524], ['Sharp', 0.55]];
   L.MIN_RANKED = 20;
   L.rank = function (gut, mode) {
-    const c = L.closer(gut, { mode });
-    if (c.n < L.MIN_RANKED) return { name: 'Rookie', n: c.n, need: L.MIN_RANKED - c.n, pct: c.pct, c };
-    let i = 0; L.RANKS.forEach(([, t], j) => { if (c.pct >= t) i = j; });
+    const r = L.betRecord(gut, { mode }), n = r.w + r.l, pct = n ? r.w / n : null;
+    if (n < L.MIN_RANKED) return { name: 'Rookie', n, need: L.MIN_RANKED - n, pct, r };
+    let i = 0; L.RANKS.forEach(([, t], j) => { if (pct >= t) i = j; });
     const next = L.RANKS[i + 1];
-    return { name: L.RANKS[i][0], idx: i, n: c.n, pct: c.pct, c, next: next ? next[0] : null, nextAt: next ? next[1] : null,
-             lo: L.RANKS[i][1], prog: next ? (c.pct - L.RANKS[i][1]) / (next[1] - L.RANKS[i][1]) : 1 };
+    return { name: L.RANKS[i][0], idx: i, n, pct, r, next: next ? next[0] : null, nextAt: next ? next[1] : null,
+             lo: L.RANKS[i][1], prog: next ? (pct - L.RANKS[i][1]) / (next[1] - L.RANKS[i][1]) : 1 };
   };
   // Closing line value: points gained vs the last pre-kickoff line, for the side you bet
   L.clvOne = function (g, v) {
