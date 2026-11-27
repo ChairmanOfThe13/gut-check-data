@@ -258,17 +258,23 @@ header .hr{display:flex;align-items:center;gap:10px}
 .sec>summary b{font:700 17px "Archivo Narrow",sans-serif;white-space:nowrap}.sec>summary small{margin-left:auto;text-align:right}
 .sx{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--btn);color:var(--yel);font:800 18px Archivo,sans-serif;flex:none}
 .sec .sb{padding:0 14px 14px}.sec .pv{background:none;border:0;box-shadow:none;padding:0;margin:0}
+
+.vs2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 6px}
+.vs2 .vl{display:block;font:800 15px Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:0 0 4px 4px}
+.vs2 > div:first-child .vl{color:var(--yel)}
+.vs2 .pill{margin:0;font-size:27px;min-height:58px;padding:6px 8px;justify-content:center;align-items:center}
+.sec .best2{margin:0}.sec .best2 div{font-size:14px;padding:8px 10px}.sec .best2 div b{font-size:20px}
 </style></head><body>
 <header><div class="hr"><h1>Gut <span>Check</span></h1></div>
 <div class="tabs" role="tablist" id="tabs"></div></header>
 <main id="main"><p class="note">Loading…</p></main>
 <div class="toast" id="toast" role="status"></div>
-<script>window.GC_BUILD='5899d88ac8';
+<script>window.GC_BUILD='199fd7a13a';
 (function(){try{if(GC_BUILD.indexOf('__')===0)return;
  fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{
   if(!j||!j.v||j.v===GC_BUILD)return; const k='gc.reload.'+j.v; if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1');
   location.replace(location.pathname+'?v='+j.v);}).catch(()=>{});}catch(e){}})();</script>
-<script src="core.js?v=5899d88ac8"></script>
+<script src="core.js?v=199fd7a13a"></script>
 <script>{
 const L=LineLab,$=s=>document.querySelector(s),E=L.esc;
 let view='gut',idx=0,pickId=null,pickWk=null,prof=null,win='all',minE=0,gutWk=null,sortK='pct';
@@ -372,7 +378,7 @@ function lockSound(ids){
  if(best)setTimeout(()=>SFX.play(best),260);
 }
 
-let VIEW='list',ONE=null,SEC={inj:false,pv:false};try{Object.assign(SEC,JSON.parse(localStorage.getItem('gc.sec')||'{}'))}catch(e){}
+let VIEW='list',ONE=null,SEC={best:true,inj:false,pv:false};try{Object.assign(SEC,JSON.parse(localStorage.getItem('gc.sec')||'{}'))}catch(e){}
 const NICK={ARI:'cardinals',ATL:'falcons',BAL:'ravens',BUF:'bills',CAR:'panthers',CHI:'bears',CIN:'bengals',CLE:'browns',DAL:'cowboys',DEN:'broncos',DET:'lions',GB:'packers',HOU:'texans',IND:'colts',JAX:'jaguars',KC:'chiefs',LA:'rams',LAC:'chargers',LV:'raiders',MIA:'dolphins',MIN:'vikings',NE:'patriots',NO:'saints',NYG:'giants',NYJ:'jets',PHI:'eagles',PIT:'steelers',SEA:'seahawks',SF:'49ers',TB:'buccaneers',TEN:'titans',WAS:'commanders'};
 function preview(g,revealed,mpLine){
  const D=L.D,R=D.ranks||{},rec=t=>(D.records[t]||[0,0,0]);
@@ -444,8 +450,7 @@ function gut(){
    <div class="rh"><span class="mt">${badge(g.a,1)}<span class="num">${E(g.a)} @ ${E(g.h)}</span>${badge(g.h,1)}</span><span class="gapb"><small>gap</small> ${Math.abs(diff).toFixed(1)}</span></div>
    ${VIEW==='list'?`<button class="opn" data-open="${E(g.id)}" aria-label="Open with game preview"><small>${E(L.kick(g))}</small><small>preview<span class="chev" aria-hidden="true">›</span></small></button>`:`<p class="note" style="margin:2px 0 0">${E(L.kick(g))}</p>`}
    ${showScore(g)?scoreRow(g)+verdict(g,v):''}
-   <div class="vs"><div class="pill you"><small>YOU</small>${E(yours)}</div><div class="pill vegas"><small>VEGAS</small>${E(real)}</div></div>
-   ${locked?'':bestBlock(g,l)}
+   <div class="vs2"><div><span class="vl">Your line</span><div class="pill you">${E(yours)}</div></div><div><span class="vl">Vegas</span><div class="pill vegas">${E(real)}</div></div></div>
    <p class="why">${readLine} <span class="note">· model ${E(L.lineText(g,Math.round(MP[g.i]*2)/2))}</span></p>
    ${foot}</article>`};
  if(VIEW==='one'&&games.length){
@@ -456,8 +461,9 @@ function gut(){
   const sec=(k,title,sub,html)=>`<details class="sec" data-sec="${k}" ${SEC[k]?'open':''}><summary><span class="sx" aria-hidden="true">${SEC[k]?'−':'+'}</span><b>${title}</b>${sub?`<small class="note">${sub}</small>`:''}</summary><div class="sb">${html}</div></details>`;
   const inj=injBlock(g);
   return chips+`<div class="one">${body}</div>
+   ${state==='C'&&g.bk?sec('best','Best odds','your books',bestBlock(g,v.rl??g.l)):''}
    ${sec('inj','Injuries',inj?E(`${g.a} −${g.ia.toFixed(1)} · ${g.h} −${g.ih.toFixed(1)} pts`):'none listed',inj||'<p class="note" style="margin:0">No key absences reported.</p>')}
-   ${sec('pv','Game preview','ranks · last 5 · history',preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2)))}
+   ${sec('pv','Game preview','ranks · last 5',preview(g,state==='C'||state==='D',L.lineText(g,Math.round(MP[g.i]*2)/2)))}
    <div class="onavb"><button data-nav="prev" ${i?'':'disabled'} aria-label="Previous game">‹ Prev</button><button data-nav="list" aria-label="Back to the game list">☰ List <small class="note">${i+1}/${games.length}</small></button><button data-nav="next" ${i<games.length-1?'':'disabled'} aria-label="Next game">Next ›</button></div>`;
  }
  const open=games.filter(g=>st(g)!=='D'), done=games.filter(g=>st(g)==='D');
